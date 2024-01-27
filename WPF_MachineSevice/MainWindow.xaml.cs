@@ -197,7 +197,8 @@ namespace WPF_MachineSevice
                                 try
                                 {
                                     capturedBitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
-                                  //  System.Windows.MessageBox.Show($"Capture saved to {filePath}");
+                                    //  System.Windows.MessageBox.Show($"Capture saved to {filePath}");
+                                    UploadFilesToFirebase(folderPath);
 
                                 }
                                 catch (Exception ex)
@@ -242,6 +243,97 @@ namespace WPF_MachineSevice
                 bitmap = new Bitmap(memoryStream);
             }
             return bitmap;
+        }
+
+        /// <summary>
+        /// Upload folder to firebase
+        /// </summary>
+        /// <param name="folderPath"></param>
+        private async void UploadFolderToFirebase(string folderPath)
+        {
+            try
+            {
+                var apiKey = "AIzaSyC7ug-zkAb2geK9rxGhDsagpGm5qrggRaE";
+                var firebaseStorageBaseUrl = "https://firebasestorage.googleapis.com/v0/b/webid-6c809.appspot.com/o";
+                string currentDate = DateTime.Now.ToString("yyyyMMdd");
+                string parentFolderName = $"{currentDate}ord{captureCount++}";
+                var parentFolderUrl = $"{firebaseStorageBaseUrl}/{parentFolderName}/";
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+                    var responseParent = await client.PostAsync(parentFolderUrl, null);
+
+                    if (responseParent.IsSuccessStatusCode)
+                    {
+                        System.Windows.MessageBox.Show($"Parent folder {parentFolderName} created successfully on Firebase Storage!");
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show($"Error creating parent folder {parentFolderName} on Firebase Storage. Status Code: {responseParent.StatusCode}\nContent: {await responseParent.Content.ReadAsStringAsync()}");
+                        return;
+                    }
+                    string[] files = Directory.GetFiles(folderPath);
+
+                    foreach (var filePath in files)
+                    {
+                        var firebaseStorageUrl = $"{parentFolderUrl}{System.IO.Path.GetFileName(filePath)}";
+                        byte[] fileBytes = File.ReadAllBytes(filePath);
+                        var content = new ByteArrayContent(fileBytes);
+                        var response = await client.PostAsync(firebaseStorageUrl, content);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            System.Windows.MessageBox.Show($"File {System.IO.Path.GetFileName(filePath)} uploaded successfully to Firebase Storage!");
+                        }
+                        else
+                        {
+                            System.Windows.MessageBox.Show($"Error uploading file {System.IO.Path.GetFileName(filePath)} to Firebase Storage. Status Code: {response.StatusCode}\nContent: {await response.Content.ReadAsStringAsync()}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error uploading files: {ex.Message}");
+            }
+        }
+        /// <summary>
+        /// Upload file in to firebase
+        /// </summary>
+        /// <param name="folderPath"></param>
+        /// <returns></returns>
+        private async Task UploadFilesToFirebase(string folderPath)
+        {
+            try
+            {
+                var apiKey = "AIzaSyC7ug-zkAb2geK9rxGhDsagpGm5qrggRaE";
+                var firebaseStorageBaseUrl = "https://firebasestorage.googleapis.com/v0/b/webid-6c809.appspot.com/o";
+                string[] files = Directory.GetFiles(folderPath);
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+                    foreach (var filePath in files)
+                    {
+                        string uniqueFileName = $"images/{Guid.NewGuid()}.png";
+                        var firebaseStorageUrl = $"{firebaseStorageBaseUrl}?uploadType=media&name={uniqueFileName}";
+                        byte[] fileBytes = File.ReadAllBytes(filePath);
+                        var content = new ByteArrayContent(fileBytes);
+                        var response = await client.PostAsync(firebaseStorageUrl, content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            MessageBox.Show($"File {uniqueFileName} uploaded successfully to Firebase Storage!");
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Error uploading file {uniqueFileName} to Firebase Storage. Status Code: {response.StatusCode}\nContent: {await response.Content.ReadAsStringAsync()}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error uploading files: {ex.Message}");
+            }
         }
         /// <summary>
         /// Update View Image By button
