@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AForge.Core" Version="1.0.0" />
+    <PackageReference Include="AForge" Version="2.2.5" />
+    <PackageReference Include="AForge.Imaging" Version="2.2.5" />
+    <PackageReference Include="AForge.Video" Version="2.2.5" />
+    <PackageReference Include="AForge.Video.DirectShow" Version="2.2.5" />
+    <PackageReference Include="FirebaseAPI" Version="1.0.0.1" />
+    <PackageReference Include="FireSharp" Version="2.0.4" />
+    <PackageReference Include="FireSharp.Serialization.JsonNet" Version="1.1.0" />
+    <PackageReference Include="Google.Apis.Storage.v1" Version="1.66.0.3291" />
+    <PackageReference Include="Google.Cloud.Datastore.V1" Version="4.6.0" />
+    <PackageReference Include="Google.Cloud.Firestore" Version="3.4.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.SqlServer.Server" Version="1.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
+  </ItemGroup>
+
+</Project>
