@@ -29,7 +29,7 @@ namespace WPF_MachineSevice
     {
         private FilterInfoCollection? videoDevices;
         private VideoCaptureDevice[]? videoSources;
-        private VideoCaptureDevice selectedVideoSource;
+        private VideoCaptureDevice? selectedVideoSource;
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
         public MainWindow()
@@ -198,7 +198,8 @@ namespace WPF_MachineSevice
                                 {
                                     capturedBitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
                                     //  System.Windows.MessageBox.Show($"Capture saved to {filePath}");
-                                    UploadFilesToFirebase(folderPath);
+                                    UploadFolderToFirebase(folderPath);
+                                    // UploadFilesToFirebase(folderPath);
 
                                 }
                                 catch (Exception ex)
@@ -255,46 +256,25 @@ namespace WPF_MachineSevice
             {
                 var apiKey = "AIzaSyC7ug-zkAb2geK9rxGhDsagpGm5qrggRaE";
                 var firebaseStorageBaseUrl = "https://firebasestorage.googleapis.com/v0/b/webid-6c809.appspot.com/o";
-                string currentDate = DateTime.Now.ToString("yyyyMMdd");
-                string parentFolderName = $"{currentDate}ord{captureCount++}";
-                var parentFolderUrl = $"{firebaseStorageBaseUrl}/{parentFolderName}/";
+
                 using (var client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-                    var responseParent = await client.PostAsync(parentFolderUrl, null);
-
-                    if (responseParent.IsSuccessStatusCode)
-                    {
-                        System.Windows.MessageBox.Show($"Parent folder {parentFolderName} created successfully on Firebase Storage!");
-                    }
-                    else
-                    {
-                        System.Windows.MessageBox.Show($"Error creating parent folder {parentFolderName} on Firebase Storage. Status Code: {responseParent.StatusCode}\nContent: {await responseParent.Content.ReadAsStringAsync()}");
-                        return;
-                    }
                     string[] files = Directory.GetFiles(folderPath);
-
                     foreach (var filePath in files)
                     {
-                        var firebaseStorageUrl = $"{parentFolderUrl}{System.IO.Path.GetFileName(filePath)}";
+                        string relativePath = System.IO.Path.GetRelativePath(folderPath, filePath);
+                        string fileName = string.Join("_", relativePath.Split(System.IO.Path.GetInvalidFileNameChars()));
+                        var firebaseStorageUrl = $"{firebaseStorageBaseUrl}?uploadType=media&name={fileName}";
                         byte[] fileBytes = File.ReadAllBytes(filePath);
                         var content = new ByteArrayContent(fileBytes);
-                        var response = await client.PostAsync(firebaseStorageUrl, content);
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            System.Windows.MessageBox.Show($"File {System.IO.Path.GetFileName(filePath)} uploaded successfully to Firebase Storage!");
-                        }
-                        else
-                        {
-                            System.Windows.MessageBox.Show($"Error uploading file {System.IO.Path.GetFileName(filePath)} to Firebase Storage. Status Code: {response.StatusCode}\nContent: {await response.Content.ReadAsStringAsync()}");
-                        }
+                        var fileResponse = await client.PostAsync(firebaseStorageUrl, content);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error uploading files: {ex.Message}");
+                MessageBox.Show($"Error uploading folder: {ex.Message}");
             }
         }
         /// <summary>
@@ -314,18 +294,20 @@ namespace WPF_MachineSevice
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
                     foreach (var filePath in files)
                     {
-                        string uniqueFileName = $"images/{Guid.NewGuid()}.png";
-                        var firebaseStorageUrl = $"{firebaseStorageBaseUrl}?uploadType=media&name={uniqueFileName}";
+                        string localFileName = System.IO.Path.GetFileName(filePath);
+                        var firebaseStorageUrl = $"{firebaseStorageBaseUrl}?uploadType=media&name=images/{localFileName}";
                         byte[] fileBytes = File.ReadAllBytes(filePath);
                         var content = new ByteArrayContent(fileBytes);
+
                         var response = await client.PostAsync(firebaseStorageUrl, content);
+
                         if (response.IsSuccessStatusCode)
                         {
-                            MessageBox.Show($"File {uniqueFileName} uploaded successfully to Firebase Storage!");
+                            MessageBox.Show($"File {localFileName} uploaded successfully to Firebase Storage!");
                         }
                         else
                         {
-                            MessageBox.Show($"Error uploading file {uniqueFileName} to Firebase Storage. Status Code: {response.StatusCode}\nContent: {await response.Content.ReadAsStringAsync()}");
+                            MessageBox.Show($"Error uploading file {localFileName} to Firebase Storage. Status Code: {response.StatusCode}\nContent: {await response.Content.ReadAsStringAsync()}");
                         }
                     }
                 }
@@ -343,6 +325,7 @@ namespace WPF_MachineSevice
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
 
+
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
@@ -354,6 +337,10 @@ namespace WPF_MachineSevice
         {
 
             
+        }
+        private void ResultTotolPrice(object sender, TextChangedEventArgs e)
+        {
+            txtResult.IsReadOnly = true;
         }
 
     }
