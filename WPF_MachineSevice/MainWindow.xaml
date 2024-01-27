@@ -30,11 +30,11 @@
                     <GridView>
                         <GridViewColumn Header="Tên Sản Phẩm" 
                                         DisplayMemberBinding="{Binding Name}" 
-                                        Width="200" />
+                                        Width="230" />
                         <GridViewColumn Header="Số Lượng" 
-                                         Width="100" />
+                                         Width="60" />
                         <GridViewColumn Header="Giá tiền"
-                                         Width="Auto"   />
+                                         Width="140"   />
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -127,16 +127,43 @@
                             HorizontalAlignment="Stretch" 
                             VerticalAlignment="Stretch"/>
                 </Border>
-
             </Grid>
             <Grid  Grid.Row="2" Grid.Column="1" Background ="Snow">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="0.15*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <!-- View Total-->
+                <Label Content="Total:" 
+                       Grid.Column="1" Grid.Row="0" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center" 
+                       FontWeight="Bold"/>
+                <TextBox x:Name="txtResult"   
+                         IsReadOnly="True"
+                         Grid.Column="2"
+                         Grid.ColumnSpan="2" Grid.Row="0" 
+                         BorderBrush="Black" BorderThickness="1"
+                         TextAlignment="Center" VerticalContentAlignment="Center"
+                         TextWrapping="Wrap" 
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         TextChanged="ResultTotolPrice"/>
+
                 <Button Content="OK" 
                         x:Name="btTakePicture"
+                        Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2"
                         Background="DarkGray"
                         Click="btTakePictureImage_Click" Height="36" Width="92"/>
             </Grid>
-            
-         
         </Grid>
     </Border>
 </Window>
