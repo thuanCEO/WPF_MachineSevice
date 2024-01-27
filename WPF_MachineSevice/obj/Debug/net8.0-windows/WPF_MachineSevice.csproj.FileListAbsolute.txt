@@ -107,3 +107,4 @@ D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\b
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win-x86\native\WebView2Loader.dll
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win\lib\net7.0\System.Management.dll
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\WPF_MachineSevice.sourcelink.json

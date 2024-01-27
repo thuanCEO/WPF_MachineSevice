@@ -142,7 +142,6 @@ namespace WPF_MachineSevice
             }
             return bitmapImage;
         }
-
         /// <summary>
         /// Take Picture Image
         /// </summary>
@@ -178,7 +177,7 @@ namespace WPF_MachineSevice
                                         return;
                                     }
                                 }
-                                string folderName = $"{DateTime.Now:yyyyMMdd}{captureCount++}";
+                                string folderName = $"{DateTime.Now:yyyyMMdd}_{captureCount++}";
                                 string folderPath = System.IO.Path.Combine(subfolderPath, folderName);
                                 if (!Directory.Exists(folderPath))
                                 {
@@ -262,7 +261,7 @@ namespace WPF_MachineSevice
         private void Button3_Click(object sender, RoutedEventArgs eventArgs)
         {
 
-
+            
         }
 
     }
