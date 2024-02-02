@@ -9,8 +9,12 @@
       "WPF_MachineSevice/1.0.0": {
         "dependencies": {
           "AForge": "2.2.5",
+          "AForge.Controls": "2.2.5",
           "AForge.Core": "1.0.0",
+          "AForge.Genetic": "2.2.5",
           "AForge.Imaging": "2.2.5",
+          "AForge.Math": "2.2.5",
+          "AForge.NetStandard": "2.2.6.1",
           "AForge.Video": "2.2.5",
           "AForge.Video.DirectShow": "2.2.5",
           "FireSharp": "2.0.4",
@@ -39,11 +43,36 @@
           }
         }
       },
+      "AForge.Controls/2.2.5": {
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Imaging": "2.2.5",
+          "AForge.Video": "2.2.5"
+        },
+        "runtime": {
+          "lib/AForge.Controls.dll": {
+            "assemblyVersion": "2.2.5.0",
+            "fileVersion": "2.2.5.0"
+          }
+        }
+      },
       "AForge.Core/1.0.0": {
         "runtime": {
           "lib/netcoreapp2.2/AForge.Core.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "AForge.Genetic/2.2.5": {
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Math": "2.2.5"
+        },
+        "runtime": {
+          "lib/AForge.Genetic.dll": {
+            "assemblyVersion": "2.2.4.0",
+            "fileVersion": "2.2.4.0"
           }
         }
       },
@@ -67,6 +96,14 @@
           "lib/AForge.Math.dll": {
             "assemblyVersion": "2.2.5.0",
             "fileVersion": "2.2.5.0"
+          }
+        }
+      },
+      "AForge.NetStandard/2.2.6.1": {
+        "runtime": {
+          "lib/netstandard2.0/AForge.NetStandard.dll": {
+            "assemblyVersion": "2.2.6.1",
+            "fileVersion": "2.2.6.1"
           }
         }
       },
@@ -1993,12 +2030,26 @@
       "path": "aforge/2.2.5",
       "hashPath": "aforge.2.2.5.nupkg.sha512"
     },
+    "AForge.Controls/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-OmJeaVTNUTX2e7i8lXWg1N1ltb836538vOdFFyZHAPv0eAuYBROyJjBKbzsJQsMOHJ14VOKp+kpxEdDIn7ND+A==",
+      "path": "aforge.controls/2.2.5",
+      "hashPath": "aforge.controls.2.2.5.nupkg.sha512"
+    },
     "AForge.Core/1.0.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-aElLt7KbzCU9gHP+h2wvGpso+HKfvtHgkxzcED4FkAn1PQK28o0neKINROiR7wvZNMnAcIa/hZ7XiuXBrd0Nsw==",
       "path": "aforge.core/1.0.0",
       "hashPath": "aforge.core.1.0.0.nupkg.sha512"
+    },
+    "AForge.Genetic/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vvTs2HsLmRQ7jdcyOa7ePpYdGsn8jLHBmA7d1zemDMwHyxDK3bBco9TooH/nwkpmzag2puZQB71hj5V9DtVf9w==",
+      "path": "aforge.genetic/2.2.5",
+      "hashPath": "aforge.genetic.2.2.5.nupkg.sha512"
     },
     "AForge.Imaging/2.2.5": {
       "type": "package",
@@ -2013,6 +2064,13 @@
       "sha512": "sha512-pmT1WobVv13vMxwXhCu8sRunxjiUHyURWS0+dsW/aBPi06xiyYIdCLHI6jph9Axb4QoLIlb85eBI6zd2EAbGIg==",
       "path": "aforge.math/2.2.5",
       "hashPath": "aforge.math.2.2.5.nupkg.sha512"
+    },
+    "AForge.NetStandard/2.2.6.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IIBO5ZB1G+RBjCxcY5gCNDN3a3dmxb6jT/LFsWggYcSZ5NgznN8gg/Dbp2oE21W3YIB22Jq0xbCSz734dOdZOA==",
+      "path": "aforge.netstandard/2.2.6.1",
+      "hashPath": "aforge.netstandard.2.2.6.1.nupkg.sha512"
     },
     "AForge.Video/2.2.5": {
       "type": "package",

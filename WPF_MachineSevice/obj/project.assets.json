@@ -11,6 +11,20 @@
           "lib/AForge.dll": {}
         }
       },
+      "AForge.Controls/2.2.5": {
+        "type": "package",
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Imaging": "2.2.5",
+          "AForge.Video": "2.2.5"
+        },
+        "compile": {
+          "lib/AForge.Controls.dll": {}
+        },
+        "runtime": {
+          "lib/AForge.Controls.dll": {}
+        }
+      },
       "AForge.Core/1.0.0": {
         "type": "package",
         "compile": {
@@ -18,6 +32,19 @@
         },
         "runtime": {
           "lib/netcoreapp2.2/AForge.Core.dll": {}
+        }
+      },
+      "AForge.Genetic/2.2.5": {
+        "type": "package",
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Math": "2.2.5"
+        },
+        "compile": {
+          "lib/AForge.Genetic.dll": {}
+        },
+        "runtime": {
+          "lib/AForge.Genetic.dll": {}
         }
       },
       "AForge.Imaging/2.2.5": {
@@ -43,6 +70,15 @@
         },
         "runtime": {
           "lib/AForge.Math.dll": {}
+        }
+      },
+      "AForge.NetStandard/2.2.6.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/AForge.NetStandard.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/AForge.NetStandard.dll": {}
         }
       },
       "AForge.Video/2.2.5": {
@@ -3380,6 +3416,19 @@
         "lib/AForge.xml"
       ]
     },
+    "AForge.Controls/2.2.5": {
+      "sha512": "OmJeaVTNUTX2e7i8lXWg1N1ltb836538vOdFFyZHAPv0eAuYBROyJjBKbzsJQsMOHJ14VOKp+kpxEdDIn7ND+A==",
+      "type": "package",
+      "path": "aforge.controls/2.2.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "aforge.controls.2.2.5.nupkg.sha512",
+        "aforge.controls.nuspec",
+        "lib/AForge.Controls.dll",
+        "lib/AForge.Controls.xml"
+      ]
+    },
     "AForge.Core/1.0.0": {
       "sha512": "aElLt7KbzCU9gHP+h2wvGpso+HKfvtHgkxzcED4FkAn1PQK28o0neKINROiR7wvZNMnAcIa/hZ7XiuXBrd0Nsw==",
       "type": "package",
@@ -3390,6 +3439,19 @@
         "aforge.core.1.0.0.nupkg.sha512",
         "aforge.core.nuspec",
         "lib/netcoreapp2.2/AForge.Core.dll"
+      ]
+    },
+    "AForge.Genetic/2.2.5": {
+      "sha512": "vvTs2HsLmRQ7jdcyOa7ePpYdGsn8jLHBmA7d1zemDMwHyxDK3bBco9TooH/nwkpmzag2puZQB71hj5V9DtVf9w==",
+      "type": "package",
+      "path": "aforge.genetic/2.2.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "aforge.genetic.2.2.5.nupkg.sha512",
+        "aforge.genetic.nuspec",
+        "lib/AForge.Genetic.dll",
+        "lib/AForge.Genetic.xml"
       ]
     },
     "AForge.Imaging/2.2.5": {
@@ -3416,6 +3478,19 @@
         "aforge.math.nuspec",
         "lib/AForge.Math.dll",
         "lib/AForge.Math.xml"
+      ]
+    },
+    "AForge.NetStandard/2.2.6.1": {
+      "sha512": "IIBO5ZB1G+RBjCxcY5gCNDN3a3dmxb6jT/LFsWggYcSZ5NgznN8gg/Dbp2oE21W3YIB22Jq0xbCSz734dOdZOA==",
+      "type": "package",
+      "path": "aforge.netstandard/2.2.6.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "License.txt",
+        "aforge.netstandard.2.2.6.1.nupkg.sha512",
+        "aforge.netstandard.nuspec",
+        "lib/netstandard2.0/AForge.NetStandard.dll"
       ]
     },
     "AForge.Video/2.2.5": {
@@ -10062,8 +10137,12 @@
   "projectFileDependencyGroups": {
     "net8.0-windows7.0": [
       "AForge >= 2.2.5",
+      "AForge.Controls >= 2.2.5",
       "AForge.Core >= 1.0.0",
+      "AForge.Genetic >= 2.2.5",
       "AForge.Imaging >= 2.2.5",
+      "AForge.Math >= 2.2.5",
+      "AForge.NetStandard >= 2.2.6.1",
       "AForge.Video >= 2.2.5",
       "AForge.Video.DirectShow >= 2.2.5",
       "FireSharp >= 2.0.4",
@@ -10130,13 +10209,29 @@
             "target": "Package",
             "version": "[2.2.5, )"
           },
+          "AForge.Controls": {
+            "target": "Package",
+            "version": "[2.2.5, )"
+          },
           "AForge.Core": {
             "target": "Package",
             "version": "[1.0.0, )"
           },
+          "AForge.Genetic": {
+            "target": "Package",
+            "version": "[2.2.5, )"
+          },
           "AForge.Imaging": {
             "target": "Package",
             "version": "[2.2.5, )"
+          },
+          "AForge.Math": {
+            "target": "Package",
+            "version": "[2.2.5, )"
+          },
+          "AForge.NetStandard": {
+            "target": "Package",
+            "version": "[2.2.6.1, )"
           },
           "AForge.Video": {
             "target": "Package",
@@ -10231,6 +10326,26 @@
       "warningLevel": 1,
       "message": "Package 'AForge 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0-windows7.0'. This package may not be fully compatible with your project.",
       "libraryId": "AForge",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge.Controls 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge.Controls",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge.Genetic 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge.Genetic",
       "targetGraphs": [
         "net8.0-windows7.0"
       ]

@@ -21,6 +21,10 @@ using System.Threading.Tasks;
 using System;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Tracing;
+using System.Management;
+using System.Linq;
+
+
 namespace WPF_MachineSevice
 {
     /// <summary>
@@ -48,12 +52,12 @@ namespace WPF_MachineSevice
             WindowState = WindowState.Maximized;
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 
-            if (videoDevices != null && videoDevices.Count >= 2)
+            if (videoDevices != null && videoDevices.Count >= 3)
             {
-                videoSources = new VideoCaptureDevice[2];
+                videoSources = new VideoCaptureDevice[3];
                 try
                 {
-                    Parallel.For(0, 2, i =>
+                    Parallel.For(0, 3, i =>
                     {
                             videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
                             videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.LastOrDefault();
@@ -72,6 +76,51 @@ namespace WPF_MachineSevice
                             }
                             videoSources[i].Start();
                         });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Lỗi khi khởi động webcam: {ex.Message}");
+                    Parallel.ForEach(videoSources, source =>
+                    {
+                        if (source != null && source.IsRunning)
+                            source.Stop();
+                    });
+                }
+            }
+            else
+            {
+                MessageBox.Show("Không đủ thiết bị video.");
+            }
+        }
+        private void MachineWindow1_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
+            videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+
+            if (videoDevices != null && videoDevices.Count >= 3)
+            {
+                videoSources = new VideoCaptureDevice[3];
+                try
+                {
+                    Parallel.For(0, 3, i =>
+                    {
+                        videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
+                        videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.LastOrDefault();
+                        switch (i)
+                        {
+                            case 0:
+                                videoSources[i].NewFrame += VideoSource1_BitMapFrame;
+                                break;
+                            case 1:
+                                videoSources[i].NewFrame += VideoSource2_BitMapFrame;
+                                videoSources[i].NewFrame += VideoSource4_BitMapFrame;
+                                break;
+                            case 2:
+                                videoSources[i].NewFrame += VideoSource3_BitMapFrame;
+                                break;
+                        }
+                        videoSources[i].Start();
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -384,8 +433,7 @@ namespace WPF_MachineSevice
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
             videoSources[1].NewFrame -= VideoSource4_BitMapFrame;
-            //videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
-
+            videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
             videoSources[0].NewFrame += VideoSource1_BitMapFrame;
             videoSources[0].NewFrame += VideoSource4_BitMapFrame;
             if (videoSources[0] != null)
@@ -396,8 +444,7 @@ namespace WPF_MachineSevice
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             videoSources[0].NewFrame -= VideoSource4_BitMapFrame;
-            //videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
-
+            videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
             videoSources[1].NewFrame += VideoSource2_BitMapFrame;
             videoSources[1].NewFrame += VideoSource4_BitMapFrame;
             if (videoSources[1] != null)
@@ -409,8 +456,6 @@ namespace WPF_MachineSevice
         {
             videoSources[1].NewFrame -= VideoSource4_BitMapFrame;
             videoSources[0].NewFrame -= VideoSource4_BitMapFrame;
-
-
             videoSources[2].NewFrame += VideoSource3_BitMapFrame;
             videoSources[2].NewFrame += VideoSource4_BitMapFrame;
             if (videoSources[2] != null)
