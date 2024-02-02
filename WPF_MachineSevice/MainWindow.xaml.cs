@@ -21,6 +21,11 @@ using System.Threading.Tasks;
 using System;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Tracing;
+using System.Management;
+using System.Linq;
+using WPF_MachineSevice.Entities;
+using System.Globalization;
+
 namespace WPF_MachineSevice
 {
     /// <summary>
@@ -32,6 +37,7 @@ namespace WPF_MachineSevice
         private VideoCaptureDevice[]? videoSources;
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
+        public List<Product> YourProductList { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -47,13 +53,16 @@ namespace WPF_MachineSevice
         {
             WindowState = WindowState.Maximized;
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            YourProductList = GetProductList();
+            UpdateTotalPrice();
 
-            if (videoDevices != null && videoDevices.Count >= 2)
+            FileFolderListView.ItemsSource = YourProductList;
+            if (videoDevices != null && videoDevices.Count >= 3)
             {
-                videoSources = new VideoCaptureDevice[2];
+                videoSources = new VideoCaptureDevice[3];
                 try
                 {
-                    Parallel.For(0, 2, i =>
+                    Parallel.For(0, 3, i =>
                     {
                             videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
                             videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.LastOrDefault();
@@ -384,8 +393,7 @@ namespace WPF_MachineSevice
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
             videoSources[1].NewFrame -= VideoSource4_BitMapFrame;
-            //videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
-
+            videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
             videoSources[0].NewFrame += VideoSource1_BitMapFrame;
             videoSources[0].NewFrame += VideoSource4_BitMapFrame;
             if (videoSources[0] != null)
@@ -396,8 +404,7 @@ namespace WPF_MachineSevice
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             videoSources[0].NewFrame -= VideoSource4_BitMapFrame;
-            //videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
-
+            videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
             videoSources[1].NewFrame += VideoSource2_BitMapFrame;
             videoSources[1].NewFrame += VideoSource4_BitMapFrame;
             if (videoSources[1] != null)
@@ -409,8 +416,6 @@ namespace WPF_MachineSevice
         {
             videoSources[1].NewFrame -= VideoSource4_BitMapFrame;
             videoSources[0].NewFrame -= VideoSource4_BitMapFrame;
-
-
             videoSources[2].NewFrame += VideoSource3_BitMapFrame;
             videoSources[2].NewFrame += VideoSource4_BitMapFrame;
             if (videoSources[2] != null)
@@ -418,11 +423,28 @@ namespace WPF_MachineSevice
                 videoSources[2].Start();
             }
         }
-
         private void ResultTotolPrice(object sender, TextChangedEventArgs e)
         {
-            txtResult.IsReadOnly = true;
+            
         }
-
+        private List<Product> GetProductList()
+        {
+            // Tạo và trả về danh sách sản phẩm
+            return new List<Product>
+        {
+            new Product { ProductName = "Product A", Quantity = 10, Price = 10000},
+            new Product { ProductName = "Product B", Quantity = 5, Price = 20000 },
+            new Product { ProductName = "Product C", Quantity = 5, Price = 30000 },
+            new Product { ProductName = "Product D", Quantity = 5, Price = 40000 },
+            new Product { ProductName = "Product E", Quantity = 5, Price = 10000 },
+            new Product { ProductName = "Product F", Quantity = 5, Price = 34000 },
+        };
+        }
+        private void UpdateTotalPrice()
+        {
+       
+            decimal totalPrice = (decimal)YourProductList.Sum(product => product.Price * product.Quantity);
+            txtResult.Text = totalPrice.ToString("C", CultureInfo.CurrentCulture).Replace("$", "");
+        }
     }
 }

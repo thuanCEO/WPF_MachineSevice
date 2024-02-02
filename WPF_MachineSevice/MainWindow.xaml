@@ -29,12 +29,14 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Tên Sản Phẩm" 
-                                        DisplayMemberBinding="{Binding Name}" 
-                                        Width="230" />
+                            DisplayMemberBinding="{Binding ProductName}" 
+                            Width="230" />
                         <GridViewColumn Header="Số Lượng" 
-                                         Width="60" />
-                        <GridViewColumn Header="Giá tiền"
-                                         Width="140"   />
+                             DisplayMemberBinding="{Binding Quantity}" 
+                             Width="60" />
+                        <GridViewColumn Header="Giá Tiền" 
+                             DisplayMemberBinding="{Binding Price}" 
+                             Width="140" />
                     </GridView>
                 </ListView.View>
             </ListView>

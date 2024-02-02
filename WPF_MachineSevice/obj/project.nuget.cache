@@ -1,13 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "IVU9IMoZbo4OiN+d+kZrhs5ENpKLT57N5owV0qba67aeU+ZpLi8CZUuiirJJ4fFbwz+VwEcO+3xtKC2Er558KQ==",
+  "dgSpecHash": "HRlsO/zSL2dwGQKLX7nbNEWkhEgeXy+Sf9+Mtcj0xcAt4dQVCzrc9/HynFO0e6HXPJy8rxF3cY+WWFiBsEKiSQ==",
   "success": true,
   "projectFilePath": "D:\\FPT\\SWD392\\ProjectSWD392\\WebsiteMachine\\WPF_MachineSevice\\WPF_MachineSevice\\WPF_MachineSevice.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\THUAN\\.nuget\\packages\\aforge\\2.2.5\\aforge.2.2.5.nupkg.sha512",
+    "C:\\Users\\THUAN\\.nuget\\packages\\aforge.controls\\2.2.5\\aforge.controls.2.2.5.nupkg.sha512",
     "C:\\Users\\THUAN\\.nuget\\packages\\aforge.core\\1.0.0\\aforge.core.1.0.0.nupkg.sha512",
+    "C:\\Users\\THUAN\\.nuget\\packages\\aforge.genetic\\2.2.5\\aforge.genetic.2.2.5.nupkg.sha512",
     "C:\\Users\\THUAN\\.nuget\\packages\\aforge.imaging\\2.2.5\\aforge.imaging.2.2.5.nupkg.sha512",
     "C:\\Users\\THUAN\\.nuget\\packages\\aforge.math\\2.2.5\\aforge.math.2.2.5.nupkg.sha512",
+    "C:\\Users\\THUAN\\.nuget\\packages\\aforge.netstandard\\2.2.6.1\\aforge.netstandard.2.2.6.1.nupkg.sha512",
     "C:\\Users\\THUAN\\.nuget\\packages\\aforge.video\\2.2.5\\aforge.video.2.2.5.nupkg.sha512",
     "C:\\Users\\THUAN\\.nuget\\packages\\aforge.video.directshow\\2.2.5\\aforge.video.directshow.2.2.5.nupkg.sha512",
     "C:\\Users\\THUAN\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
@@ -197,6 +200,26 @@
       "warningLevel": 1,
       "message": "Package 'AForge 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0-windows7.0'. This package may not be fully compatible with your project.",
       "libraryId": "AForge",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge.Controls 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge.Controls",
+      "targetGraphs": [
+        "net8.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge.Genetic 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge.Genetic",
       "targetGraphs": [
         "net8.0-windows7.0"
       ]

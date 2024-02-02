@@ -170,3 +170,6 @@ D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\b
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\AForge.Controls.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\AForge.Genetic.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\AForge.NetStandard.dll
