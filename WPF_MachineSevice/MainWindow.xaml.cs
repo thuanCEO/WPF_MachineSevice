@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System;
 using System.Windows.Media.Media3D;
 using System.Diagnostics.Tracing;
@@ -29,7 +30,6 @@ namespace WPF_MachineSevice
     {
         private FilterInfoCollection? videoDevices;
         private VideoCaptureDevice[]? videoSources;
-        private VideoCaptureDevice? selectedVideoSource;
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
         public MainWindow()
@@ -47,18 +47,45 @@ namespace WPF_MachineSevice
         {
             WindowState = WindowState.Maximized;
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-            if (videoDevices.Count > 0)
+
+            if (videoDevices != null && videoDevices.Count >= 2)
             {
-                videoSources = new VideoCaptureDevice[videoDevices.Count];
-                for (int i = 0; i < videoDevices.Count; i++)
+                videoSources = new VideoCaptureDevice[2];
+                try
                 {
-                    videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
-                    videoSources[i].NewFrame += VideoSource_BitMapFrame;
-                    videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.Last();
-                    videoSources[i].Start();
+                    Parallel.For(0, 2, i =>
+                    {
+                            videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
+                            videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.LastOrDefault();
+                            switch (i)
+                            {
+                                case 0:
+                                    videoSources[i].NewFrame += VideoSource1_BitMapFrame;
+                                    break;
+                                case 1:
+                                    videoSources[i].NewFrame += VideoSource2_BitMapFrame;
+                                    videoSources[i].NewFrame += VideoSource4_BitMapFrame;                    
+                                    break;
+                                case 2:
+                                    videoSources[i].NewFrame += VideoSource3_BitMapFrame;
+                                    break;
+                            }
+                            videoSources[i].Start();
+                        });
                 }
-                selectedVideoSource = videoSources[0];
-                selectedVideoSource.NewFrame += VideoSource_BitMapFrame;
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Lỗi khi khởi động webcam: {ex.Message}");
+                    Parallel.ForEach(videoSources, source =>
+                    {
+                        if (source != null && source.IsRunning)
+                            source.Stop();
+                    });
+                }
+            }
+            else
+            {
+                MessageBox.Show("Không đủ thiết bị video.");
             }
         }
         /// <summary>
@@ -111,17 +138,53 @@ namespace WPF_MachineSevice
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="eventArgs"></param>
-        private void VideoSource_BitMapFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
+        private void VideoSource1_BitMapFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
-            Bitmap frame = (Bitmap)eventArgs.Frame.Clone();
-            camVideoView.Dispatcher.Invoke(() =>
+            try
             {
-                Dispatcher.Invoke(() => DisplayImageInImageView(frame, camVideo1));
-                Dispatcher.Invoke(() => DisplayImageInImageView(frame, camVideo2));
-                Dispatcher.Invoke(() => DisplayImageInImageView(frame, camVideo3));
-                Dispatcher.Invoke(() => DisplayImageInImageView(frame, camVideoView));
-
-            });
+                Bitmap frame1 = (Bitmap)eventArgs.Frame.Clone();
+                camVideo1.Dispatcher.Invoke(() => DisplayImageInImageView(frame1, camVideo1));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error in VideoSource_BitMapFrame: {ex.Message}");
+            }
+        }
+        private void VideoSource2_BitMapFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
+        {
+            try
+            {
+                Bitmap frame2 = (Bitmap)eventArgs.Frame.Clone();
+                camVideo2.Dispatcher.Invoke(() => DisplayImageInImageView(frame2, camVideo2));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error in VideoSource_BitMapFrame: {ex.Message}");
+            }
+        }
+        private void VideoSource3_BitMapFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
+        {
+            try
+            {
+                Bitmap frame3 = (Bitmap)eventArgs.Frame.Clone();
+                camVideo3.Dispatcher.Invoke(() => DisplayImageInImageView(frame3, camVideo3));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error in VideoSource_BitMapFrame: {ex.Message}");
+            }
+        }
+        private void VideoSource4_BitMapFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
+        {
+            try
+            {
+                Bitmap frame4 = (Bitmap)eventArgs.Frame.Clone();
+                camVideoView.Dispatcher.Invoke(() => DisplayImageInImageView(frame4, camVideoView));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error in VideoSource_BitMapFrame: {ex.Message}");
+            }
         }
         /// <summary>
         /// Convert To Bitmap Image
@@ -135,6 +198,7 @@ namespace WPF_MachineSevice
             {
                 bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
                 memory.Position = 0;
+
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = memory;
                 bitmapImage.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
@@ -200,7 +264,6 @@ namespace WPF_MachineSevice
                                     //  System.Windows.MessageBox.Show($"Capture saved to {filePath}");
                                     UploadFolderToFirebase(folderPath);
                                     // UploadFilesToFirebase(folderPath);
-
                                 }
                                 catch (Exception ex)
                                 {
@@ -245,7 +308,6 @@ namespace WPF_MachineSevice
             }
             return bitmap;
         }
-
         /// <summary>
         /// Upload folder to firebase
         /// </summary>
@@ -256,7 +318,6 @@ namespace WPF_MachineSevice
             {
                 var apiKey = "AIzaSyC7ug-zkAb2geK9rxGhDsagpGm5qrggRaE";
                 var firebaseStorageBaseUrl = "https://firebasestorage.googleapis.com/v0/b/webid-6c809.appspot.com/o";
-
                 using (var client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
@@ -298,9 +359,7 @@ namespace WPF_MachineSevice
                         var firebaseStorageUrl = $"{firebaseStorageBaseUrl}?uploadType=media&name=images/{localFileName}";
                         byte[] fileBytes = File.ReadAllBytes(filePath);
                         var content = new ByteArrayContent(fileBytes);
-
                         var response = await client.PostAsync(firebaseStorageUrl, content);
-
                         if (response.IsSuccessStatusCode)
                         {
                             MessageBox.Show($"File {localFileName} uploaded successfully to Firebase Storage!");
@@ -324,20 +383,42 @@ namespace WPF_MachineSevice
         /// <param name="e"></param>
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
+            videoSources[1].NewFrame -= VideoSource4_BitMapFrame;
+            //videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
 
-
+            videoSources[0].NewFrame += VideoSource1_BitMapFrame;
+            videoSources[0].NewFrame += VideoSource4_BitMapFrame;
+            if (videoSources[0] != null)
+            {
+                videoSources[0].Start();
+            }
         }
-
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
+            videoSources[0].NewFrame -= VideoSource4_BitMapFrame;
+            //videoSources[2].NewFrame -= VideoSource4_BitMapFrame;
 
+            videoSources[1].NewFrame += VideoSource2_BitMapFrame;
+            videoSources[1].NewFrame += VideoSource4_BitMapFrame;
+            if (videoSources[1] != null)
+            {
+                videoSources[1].Start();
+            }
         }
-
         private void Button3_Click(object sender, RoutedEventArgs eventArgs)
         {
+            videoSources[1].NewFrame -= VideoSource4_BitMapFrame;
+            videoSources[0].NewFrame -= VideoSource4_BitMapFrame;
 
-            
+
+            videoSources[2].NewFrame += VideoSource3_BitMapFrame;
+            videoSources[2].NewFrame += VideoSource4_BitMapFrame;
+            if (videoSources[2] != null)
+            {
+                videoSources[2].Start();
+            }
         }
+
         private void ResultTotolPrice(object sender, TextChangedEventArgs e)
         {
             txtResult.IsReadOnly = true;
