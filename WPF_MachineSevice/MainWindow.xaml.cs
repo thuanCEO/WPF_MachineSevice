@@ -23,7 +23,8 @@ using System.Windows.Media.Media3D;
 using System.Diagnostics.Tracing;
 using System.Management;
 using System.Linq;
-
+using WPF_MachineSevice.Entities;
+using System.Globalization;
 
 namespace WPF_MachineSevice
 {
@@ -36,6 +37,7 @@ namespace WPF_MachineSevice
         private VideoCaptureDevice[]? videoSources;
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
+        public List<Product> YourProductList { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -51,7 +53,10 @@ namespace WPF_MachineSevice
         {
             WindowState = WindowState.Maximized;
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            YourProductList = GetProductList();
+            UpdateTotalPrice();
 
+            FileFolderListView.ItemsSource = YourProductList;
             if (videoDevices != null && videoDevices.Count >= 3)
             {
                 videoSources = new VideoCaptureDevice[3];
@@ -76,51 +81,6 @@ namespace WPF_MachineSevice
                             }
                             videoSources[i].Start();
                         });
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Lỗi khi khởi động webcam: {ex.Message}");
-                    Parallel.ForEach(videoSources, source =>
-                    {
-                        if (source != null && source.IsRunning)
-                            source.Stop();
-                    });
-                }
-            }
-            else
-            {
-                MessageBox.Show("Không đủ thiết bị video.");
-            }
-        }
-        private void MachineWindow1_Loaded(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Maximized;
-            videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-
-            if (videoDevices != null && videoDevices.Count >= 3)
-            {
-                videoSources = new VideoCaptureDevice[3];
-                try
-                {
-                    Parallel.For(0, 3, i =>
-                    {
-                        videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
-                        videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.LastOrDefault();
-                        switch (i)
-                        {
-                            case 0:
-                                videoSources[i].NewFrame += VideoSource1_BitMapFrame;
-                                break;
-                            case 1:
-                                videoSources[i].NewFrame += VideoSource2_BitMapFrame;
-                                videoSources[i].NewFrame += VideoSource4_BitMapFrame;
-                                break;
-                            case 2:
-                                videoSources[i].NewFrame += VideoSource3_BitMapFrame;
-                                break;
-                        }
-                        videoSources[i].Start();
-                    });
                 }
                 catch (Exception ex)
                 {
@@ -463,11 +423,28 @@ namespace WPF_MachineSevice
                 videoSources[2].Start();
             }
         }
-
         private void ResultTotolPrice(object sender, TextChangedEventArgs e)
         {
-            txtResult.IsReadOnly = true;
+            
         }
-
+        private List<Product> GetProductList()
+        {
+            // Tạo và trả về danh sách sản phẩm
+            return new List<Product>
+        {
+            new Product { ProductName = "Product A", Quantity = 10, Price = 10000},
+            new Product { ProductName = "Product B", Quantity = 5, Price = 20000 },
+            new Product { ProductName = "Product C", Quantity = 5, Price = 30000 },
+            new Product { ProductName = "Product D", Quantity = 5, Price = 40000 },
+            new Product { ProductName = "Product E", Quantity = 5, Price = 10000 },
+            new Product { ProductName = "Product F", Quantity = 5, Price = 34000 },
+        };
+        }
+        private void UpdateTotalPrice()
+        {
+       
+            decimal totalPrice = (decimal)YourProductList.Sum(product => product.Price * product.Quantity);
+            txtResult.Text = totalPrice.ToString("C", CultureInfo.CurrentCulture).Replace("$", "");
+        }
     }
 }
