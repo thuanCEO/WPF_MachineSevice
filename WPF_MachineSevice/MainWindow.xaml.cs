@@ -25,6 +25,7 @@ using System.Management;
 using System.Linq;
 using WPF_MachineSevice.Entities;
 using System.Globalization;
+using WPF_MachineSevice.DAO;
 
 namespace WPF_MachineSevice
 {
@@ -37,13 +38,30 @@ namespace WPF_MachineSevice
         private VideoCaptureDevice[]? videoSources;
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
+
+        private readonly ScanMachineContext context;
         public List<Product> YourProductList { get; set; }
         public MainWindow()
         {
+            context = new ScanMachineContext();
             InitializeComponent();
             Loaded += MachineWindow_Loaded;
             Closing += MachineWindow_Closing;
+          
         }
+        /// <summary>
+        /// Load full product Data On ViewList
+        /// </summary>
+        private void LoadData()
+        {
+            using (var dbContext = new ScanMachineContext())
+            {
+                var productList = dbContext.Products.ToList();
+                FileFolderListView.ItemsSource = productList;
+            }
+        }
+
+
         /// <summary>
         /// Load Machine Window
         /// </summary>
@@ -53,10 +71,6 @@ namespace WPF_MachineSevice
         {
             WindowState = WindowState.Maximized;
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-            YourProductList = GetProductList();
-            UpdateTotalPrice();
-
-            FileFolderListView.ItemsSource = YourProductList;
             if (videoDevices != null && videoDevices.Count >= 3)
             {
                 videoSources = new VideoCaptureDevice[3];
@@ -96,6 +110,7 @@ namespace WPF_MachineSevice
             {
                 MessageBox.Show("Không đủ thiết bị video.");
             }
+      
         }
         /// <summary>
         /// Close Machine Window
@@ -237,12 +252,15 @@ namespace WPF_MachineSevice
                                 Bitmap capturedBitmap = HelpToBitMapImage(capturedBitmapSource);
                                 string subfolderName = DateTime.Now.ToString("yyyyMMdd");
                                 string subfolderPath = System.IO.Path.Combine("D:\\FPT\\SWD392\\ProjectSWD392\\WebsiteMachine\\WPF_MachineSevice\\Picture", subfolderName);
+
+                           
+                                string subfilePath = System.IO.Path.Combine("D:\\FPT\\SWD392\\ProjectSWD392\\WebsiteMachine\\WPF_MachineSevice\\Picture", subfolderName);
+                        
                                 if (!Directory.Exists(subfolderPath))
                                 {
                                     try
                                     {
                                         Directory.CreateDirectory(subfolderPath);
-                                       // System.Windows.MessageBox.Show($"Subfolder created: {subfolderPath}");
                                     }
                                     catch (Exception ex)
                                     {
@@ -257,7 +275,6 @@ namespace WPF_MachineSevice
                                     try
                                     {
                                         Directory.CreateDirectory(folderPath);
-                                       // System.Windows.MessageBox.Show($"Folder created: {folderPath}");
                                     }
                                     catch (Exception ex)
                                     {
@@ -267,12 +284,17 @@ namespace WPF_MachineSevice
                                 }
                                 string fileName = $"capture_{DateTime.Now:HHmmss}.png";
                                 string filePath = System.IO.Path.Combine(folderPath, fileName);
+                                
+                                //Path with train AI
+                                string filePathPython = System.IO.Path.Combine("C:\\Yolov8\\ultralytics\\yolov8-silva\\inference\\images", fileName);
+                                LoadData();
                                 try
                                 {
                                     capturedBitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
-                                    //  System.Windows.MessageBox.Show($"Capture saved to {filePath}");
+                                    
+                                    //Save Image in file AI
+                                    capturedBitmap.Save(filePathPython, System.Drawing.Imaging.ImageFormat.Bmp);
                                     UploadFolderToFirebase(folderPath);
-                                    // UploadFilesToFirebase(folderPath);
                                 }
                                 catch (Exception ex)
                                 {
@@ -427,24 +449,7 @@ namespace WPF_MachineSevice
         {
             
         }
-        private List<Product> GetProductList()
-        {
-            // Tạo và trả về danh sách sản phẩm
-            return new List<Product>
-        {
-            new Product { ProductName = "Product A", Quantity = 10, Price = 10000},
-            new Product { ProductName = "Product B", Quantity = 5, Price = 20000 },
-            new Product { ProductName = "Product C", Quantity = 5, Price = 30000 },
-            new Product { ProductName = "Product D", Quantity = 5, Price = 40000 },
-            new Product { ProductName = "Product E", Quantity = 5, Price = 10000 },
-            new Product { ProductName = "Product F", Quantity = 5, Price = 34000 },
-        };
-        }
-        private void UpdateTotalPrice()
-        {
        
-            decimal totalPrice = (decimal)YourProductList.Sum(product => product.Price * product.Quantity);
-            txtResult.Text = totalPrice.ToString("C", CultureInfo.CurrentCulture).Replace("$", "");
-        }
+    
     }
 }

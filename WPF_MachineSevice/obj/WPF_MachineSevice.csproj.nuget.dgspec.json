@@ -95,7 +95,7 @@
             },
             "Google.Apis.Storage.v1": {
               "target": "Package",
-              "version": "[1.66.0.3291, )"
+              "version": "[1.67.0.3326, )"
             },
             "Google.Cloud.Datastore.V1": {
               "target": "Package",
@@ -103,25 +103,25 @@
             },
             "Google.Cloud.Firestore": {
               "target": "Package",
-              "version": "[3.5.0, )"
+              "version": "[3.5.1, )"
             },
             "Google.Cloud.Storage.V1": {
               "target": "Package",
-              "version": "[4.7.0, )"
+              "version": "[4.8.0, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.1, )"
+              "version": "[8.0.2, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[8.0.1, )"
+              "version": "[8.0.2, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.1, )"
+              "version": "[8.0.2, )"
             },
             "Microsoft.Extensions.Configuration.Json": {
               "target": "Package",
@@ -133,7 +133,7 @@
             },
             "System.Drawing.Common": {
               "target": "Package",
-              "version": "[8.0.1, )"
+              "version": "[8.0.2, )"
             }
           },
           "imports": [

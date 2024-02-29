@@ -173,3 +173,13 @@ D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\b
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\AForge.Controls.dll
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\AForge.Genetic.dll
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\AForge.NetStandard.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\Microsoft.Identity.Client.NativeInterop.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\Microsoft.Web.WebView2.Core.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\Microsoft.Web.WebView2.WinForms.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\Microsoft.Web.WebView2.Wpf.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win-arm64\native\msalruntime_arm64.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win-x64\native\msalruntime.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win-x86\native\msalruntime_x86.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win-arm64\native\WebView2Loader.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win-x64\native\WebView2Loader.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\win-x86\native\WebView2Loader.dll
