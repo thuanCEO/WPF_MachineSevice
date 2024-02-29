@@ -44,4 +44,5 @@ public partial class Product
     public virtual Image Image { get; set; } = null!;
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+    //public double TotalPrice { get; set; }
 }

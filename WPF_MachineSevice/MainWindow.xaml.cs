@@ -26,6 +26,10 @@ using System.Linq;
 using WPF_MachineSevice.Entities;
 using System.Globalization;
 using WPF_MachineSevice.DAO;
+using Newtonsoft.Json;
+using WPF_MachineSevice.Service;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace WPF_MachineSevice
 {
@@ -40,7 +44,9 @@ namespace WPF_MachineSevice
         private int captureCount = 1;
 
         private readonly ScanMachineContext context;
-        public List<Product> YourProductList { get; set; }
+
+        private bool IsScanning = true;
+
         public MainWindow()
         {
             context = new ScanMachineContext();
@@ -52,16 +58,82 @@ namespace WPF_MachineSevice
         /// <summary>
         /// Load full product Data On ViewList
         /// </summary>
-        private void LoadData()
+        private async void LoadDataAsync()
         {
-            using (var dbContext = new ScanMachineContext())
+          
+
+            string detectjsonFilePath = @"D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\detection_results.json";
+            Scanning messageBox = new Scanning();
+            Window window = new Window
             {
-                var productList = dbContext.Products.ToList();
-                FileFolderListView.ItemsSource = productList;
+                Content = messageBox,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                WindowStyle = WindowStyle.None,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                Title = "Scanning"
+            };
+            window.Show();
+            await Task.Delay(2000);
+            if (File.Exists(detectjsonFilePath))
+            {
+                List<Detection> productsFromJson;
+                using (StreamReader r = new StreamReader(detectjsonFilePath))
+                {
+                    string json = r.ReadToEnd();
+                    productsFromJson = JsonConvert.DeserializeObject<List<Detection>>(json);
+                }
+                Dictionary<string, int> productNameCounts = new Dictionary<string, int>();
+                foreach (var detection in productsFromJson)
+                {
+                    if (productNameCounts.ContainsKey(detection.name))
+                    {
+                        productNameCounts[detection.name]++;
+                    }
+                    else
+                    {
+                        productNameCounts[detection.name] = 1;
+                    }
+                }
+                List<Product> productsToDisplay = new List<Product>();
+                var allProductsFromDb = context.Products.ToList();
+                foreach (var productDb in allProductsFromDb)
+                {
+                    if (productNameCounts.ContainsKey(productDb.ProductName))
+                    {
+                        productDb.Quantity = productNameCounts[productDb.ProductName];
+                        productDb.Price = productDb.Quantity * productDb.Price;
+                        productsToDisplay.Add(productDb);
+                    }
+                }
+                FileFolderListView.ItemsSource = productsToDisplay;
+                CalculateTotalPrice();
+                IsScanning = false;
             }
+            else
+            {
+                MessageBox.Show("File not found: " + detectjsonFilePath);
+            }
+            window.Close();
+        }
+        private void CalculateTotalPrice()
+        {
+            double totalPrice = 0;
+            foreach (var item in FileFolderListView.Items)
+            {
+                if (item is Product product)
+                {
+                    totalPrice += product.Quantity * product.Price;
+                }
+            }
+            txtResult.Text = totalPrice.ToString(); 
         }
 
-
+        private void ResultTotolPrice(object sender, TextChangedEventArgs e)
+        {
+            CalculateTotalPrice();
+        }
+       
         /// <summary>
         /// Load Machine Window
         /// </summary>
@@ -287,7 +359,7 @@ namespace WPF_MachineSevice
                                 
                                 //Path with train AI
                                 string filePathPython = System.IO.Path.Combine("C:\\Yolov8\\ultralytics\\yolov8-silva\\inference\\images", fileName);
-                                LoadData();
+                                LoadDataAsync();
                                 try
                                 {
                                     capturedBitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
@@ -445,11 +517,7 @@ namespace WPF_MachineSevice
                 videoSources[2].Start();
             }
         }
-        private void ResultTotolPrice(object sender, TextChangedEventArgs e)
-        {
-            
-        }
-       
+      
     
     }
 }
