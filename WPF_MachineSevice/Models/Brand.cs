@@ -31,6 +31,8 @@ public partial class Brand
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
 
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+
     public virtual ICollection<ShopStore> ShopStores { get; set; } = new List<ShopStore>();
 
     public virtual User User { get; set; } = null!;

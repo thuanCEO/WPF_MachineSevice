@@ -9,5 +9,6 @@
              d:DesignHeight="200" d:DesignWidth="200">
     <Grid>
         <Image x:Name="qrCodeImageView" Stretch="Uniform"/>
+        
     </Grid>
 </UserControl>

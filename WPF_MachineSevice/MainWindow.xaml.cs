@@ -23,7 +23,6 @@ using System.Windows.Media.Media3D;
 using System.Diagnostics.Tracing;
 using System.Management;
 using System.Linq;
-using WPF_MachineSevice.Entities;
 using System.Globalization;
 using WPF_MachineSevice.DAO;
 using Newtonsoft.Json;
@@ -38,6 +37,9 @@ using ZXing.Rendering;
 using System.Drawing.Drawing2D;
 using Microsoft.VisualBasic.Logging;
 using QRCoder;
+using WPF_MachineSevice.Models;
+using WPF_MachineSevice.Repository;
+
 namespace WPF_MachineSevice
 {
     /// <summary>
@@ -49,14 +51,17 @@ namespace WPF_MachineSevice
         private VideoCaptureDevice[]? videoSources;
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
+        public List<Models.Product> YourProductList { get; set; }
+        public UnitOfWork unitOfWork = new UnitOfWork();
+   
 
-        private readonly ScanMachineContext context;
+        private readonly DAO.ScanMachineContext context;
 
         private bool IsScanning = true;
 
         public MainWindow()
         {
-            context = new ScanMachineContext();
+            context = new DAO.ScanMachineContext();
             InitializeComponent();
             Loaded += MachineWindow_Loaded;
             Closing += MachineWindow_Closing;
@@ -524,6 +529,11 @@ namespace WPF_MachineSevice
                 videoSources[2].Start();
             }
         }
+        /// <summary>
+        /// Payment by QR code
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async  void btPaymentQRCode_click(object sender, RoutedEventArgs e)
         {
             // Config user momo
@@ -584,7 +594,13 @@ namespace WPF_MachineSevice
 
             return paymentSuccess;
         }
- 
+    
+        /// <summary>
+        /// Add Logo momo
+        /// </summary>
+        /// <param name="qrCode"></param>
+        /// <param name="logo"></param>
+        /// <returns></returns>
         private Bitmap AddLogoToQRCode(Bitmap qrCode, Bitmap logo)
         {
             int xPos = (qrCode.Width - logo.Width) / 2;
@@ -610,6 +626,77 @@ namespace WPF_MachineSevice
             g.DrawImage(image, 0, 0, newWidth, newHeight);
             return newImage;
         }
+
+        private void btConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Models.Order newOrder = new Models.Order
+                {
+                    MachineId = 1,
+                    StoreId = 1,
+                    Status = 1,
+                    TotalPrice = Convert.ToDouble(txtResult.Text),
+                    CreationDate = DateTime.Now,
+                    OrderImageId = 1
+
+                };
+
+                context.Orders.Add(newOrder);
+                context.SaveChanges();
+
+                List<Models.Product> productList = new List<Models.Product>();
+
+                if (FileFolderListView.ItemsSource != null)
+                {
+                    foreach (var item in FileFolderListView.ItemsSource)
+                    {
+                        if (item is Models.Product product)
+                        {
+                            Models.Product newProduct = new Product
+                            {
+                                Id = product.Id,
+                                ProductName = product.ProductName,
+                                Quantity = product.Quantity,
+                                Price = product.Price
+                            };
+
+                            productList.Add(newProduct);
+                        }
+                    }
+                }
+
+                foreach (var product in productList)
+                {
+                    Models.OrderDetail orderDetail = new Models.OrderDetail
+                    {
+                        ProductId = product.Id,
+                        Quantity = product.Quantity,
+                        Price = product.Price,
+                        OrderId = newOrder.Id,
+                        Status = 1,
+                    };
+                    newOrder.OrderDetails.Add(orderDetail);
+                    newOrder.TotalPrice += product.Quantity * product.Price;
+
+                }
+
+                context.Orders.Update(newOrder);
+                context.Entry(newOrder).State = EntityState.Modified;
+
+
+               
+                MessageBox.Show("Đơn hàng đã được lưu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+            
+                MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+
 
     }
 }
