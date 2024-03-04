@@ -13,6 +13,8 @@ public partial class User
 
     public string Email { get; set; } = null!;
 
+    public string Password { get; set; } = null!;
+
     public string Address { get; set; } = null!;
 
     public string? Description { get; set; }
@@ -20,6 +22,8 @@ public partial class User
     public int Status { get; set; }
 
     public string? Code { get; set; }
+
+    public int? RoleId { get; set; }
 
     public DateTime? CreationDate { get; set; }
 
@@ -30,4 +34,6 @@ public partial class User
     public string? IsDeleted { get; set; }
 
     public virtual ICollection<Brand> Brands { get; set; } = new List<Brand>();
+
+    public virtual Role? Role { get; set; }
 }

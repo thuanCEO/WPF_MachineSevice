@@ -11,8 +11,6 @@ public partial class Order
 
     public int StoreId { get; set; }
 
-    public int OrderDetailsId { get; set; }
-
     public int OrderImageId { get; set; }
 
     public int Status { get; set; }
@@ -35,11 +33,7 @@ public partial class Order
 
     public virtual Machine Machine { get; set; } = null!;
 
-    public virtual OrderDetail OrderDetails { get; set; } = null!;
-
-    public virtual ICollection<OrderDetail> OrderDetailsNavigation { get; set; } = new List<OrderDetail>();
+    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual OrderImage OrderImage { get; set; } = null!;
-
-    public virtual ShopStore Store { get; set; } = null!;
 }

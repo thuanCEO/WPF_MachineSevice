@@ -33,7 +33,5 @@ public partial class OrderDetail
 
     public virtual Order Order { get; set; } = null!;
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-
     public virtual Product Product { get; set; } = null!;
 }

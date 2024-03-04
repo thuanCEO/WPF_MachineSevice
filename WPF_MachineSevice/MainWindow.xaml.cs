@@ -23,8 +23,11 @@ using System.Windows.Media.Media3D;
 using System.Diagnostics.Tracing;
 using System.Management;
 using System.Linq;
-using WPF_MachineSevice.Entities;
+
 using System.Globalization;
+using WPF_MachineSevice.Repository;
+using WPF_MachineSevice.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace WPF_MachineSevice
 {
@@ -37,7 +40,9 @@ namespace WPF_MachineSevice
         private VideoCaptureDevice[]? videoSources;
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
-        public List<Product> YourProductList { get; set; }
+        public List<Models.Product> YourProductList { get; set; }
+        public UnitOfWork unitOfWork = new UnitOfWork();
+        public ScanMachineContext scanMachineContext = new ScanMachineContext();
         public MainWindow()
         {
             InitializeComponent();
@@ -64,23 +69,23 @@ namespace WPF_MachineSevice
                 {
                     Parallel.For(0, 3, i =>
                     {
-                            videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
-                            videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.LastOrDefault();
-                            switch (i)
-                            {
-                                case 0:
-                                    videoSources[i].NewFrame += VideoSource1_BitMapFrame;
-                                    break;
-                                case 1:
-                                    videoSources[i].NewFrame += VideoSource2_BitMapFrame;
-                                    videoSources[i].NewFrame += VideoSource4_BitMapFrame;                    
-                                    break;
-                                case 2:
-                                    videoSources[i].NewFrame += VideoSource3_BitMapFrame;
-                                    break;
-                            }
-                            videoSources[i].Start();
-                        });
+                        videoSources[i] = new VideoCaptureDevice(videoDevices[i].MonikerString);
+                        videoSources[i].VideoResolution = videoSources[i].VideoCapabilities.LastOrDefault();
+                        switch (i)
+                        {
+                            case 0:
+                                videoSources[i].NewFrame += VideoSource1_BitMapFrame;
+                                break;
+                            case 1:
+                                videoSources[i].NewFrame += VideoSource2_BitMapFrame;
+                                videoSources[i].NewFrame += VideoSource4_BitMapFrame;
+                                break;
+                            case 2:
+                                videoSources[i].NewFrame += VideoSource3_BitMapFrame;
+                                break;
+                        }
+                        videoSources[i].Start();
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -242,7 +247,7 @@ namespace WPF_MachineSevice
                                     try
                                     {
                                         Directory.CreateDirectory(subfolderPath);
-                                       // System.Windows.MessageBox.Show($"Subfolder created: {subfolderPath}");
+                                        // System.Windows.MessageBox.Show($"Subfolder created: {subfolderPath}");
                                     }
                                     catch (Exception ex)
                                     {
@@ -257,7 +262,7 @@ namespace WPF_MachineSevice
                                     try
                                     {
                                         Directory.CreateDirectory(folderPath);
-                                       // System.Windows.MessageBox.Show($"Folder created: {folderPath}");
+                                        // System.Windows.MessageBox.Show($"Folder created: {folderPath}");
                                     }
                                     catch (Exception ex)
                                     {
@@ -425,26 +430,95 @@ namespace WPF_MachineSevice
         }
         private void ResultTotolPrice(object sender, TextChangedEventArgs e)
         {
-            
+
         }
-        private List<Product> GetProductList()
+        private List<Models.Product> GetProductList()
         {
             // Tạo và trả về danh sách sản phẩm
-            return new List<Product>
+            return new List<Models.Product>
         {
-            new Product { ProductName = "Product A", Quantity = 10, Price = 10000},
-            new Product { ProductName = "Product B", Quantity = 5, Price = 20000 },
-            new Product { ProductName = "Product C", Quantity = 5, Price = 30000 },
-            new Product { ProductName = "Product D", Quantity = 5, Price = 40000 },
-            new Product { ProductName = "Product E", Quantity = 5, Price = 10000 },
-            new Product { ProductName = "Product F", Quantity = 5, Price = 34000 },
+            new Models.Product {Id = 1, ProductName = "Product A", Quantity = 10, Price = 10000},
+            new Models.Product {Id = 2, ProductName = "Product B", Quantity = 5, Price = 20000 },
+            new Models.Product {Id = 3, ProductName = "Product C", Quantity = 5, Price = 30000 },
+            new Models.Product {Id = 4,  ProductName = "Product D", Quantity = 5, Price = 40000 },
+            new Product {Id = 5,  ProductName = "Product E", Quantity = 5, Price = 10000 },
+            new Product {Id = 6,  ProductName = "Product F", Quantity = 5, Price = 34000 },
         };
         }
         private void UpdateTotalPrice()
         {
-       
+
             decimal totalPrice = (decimal)YourProductList.Sum(product => product.Price * product.Quantity);
             txtResult.Text = totalPrice.ToString("C", CultureInfo.CurrentCulture).Replace("$", "");
         }
+
+        private void btConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Models.Order newOrder = new Models.Order
+                {
+                    MachineId = 1,
+                    StoreId = 1,
+                    Status = 1,
+                    TotalPrice = Convert.ToDouble(txtResult.Text),
+                    CreationDate = DateTime.Now,
+                    OrderImageId = 1
+                    
+                };
+
+                scanMachineContext.Orders.Add(newOrder);
+                scanMachineContext.SaveChanges();
+
+                List<Models.Product> productList = new List<Models.Product>();
+
+                if (FileFolderListView.ItemsSource != null)
+                {
+                    foreach (var item in FileFolderListView.ItemsSource)
+                    {
+                        if (item is Models.Product product)
+                        {
+                            Models.Product newProduct = new Product
+                            {
+                                Id = product.Id,
+                                ProductName = product.ProductName,
+                                Quantity = product.Quantity,
+                                Price = product.Price
+                            };
+
+                            productList.Add(newProduct);
+                        }
+                    }
+                }
+
+                foreach (var product in productList)
+                {
+                    Models.OrderDetail orderDetail = new Models.OrderDetail
+                    {
+                        ProductId = product.Id,
+                        Quantity = product.Quantity,
+                        Price = product.Price,
+                        OrderId = newOrder.Id,
+                        Status = 1,
+                    };
+                    newOrder.OrderDetails.Add(orderDetail);
+                    newOrder.TotalPrice += product.Quantity * product.Price;
+                    
+                }
+
+                scanMachineContext.Orders.Update(newOrder);
+                scanMachineContext.Entry(newOrder).State = EntityState.Modified;
+               
+
+                // In thông báo thành công lên màn hình
+                MessageBox.Show("Đơn hàng đã được lưu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu có
+                MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
     }
 }

@@ -34,6 +34,4 @@ public partial class ShopStore
     public virtual Brand Brand { get; set; } = null!;
 
     public virtual ICollection<Machine> Machines { get; set; } = new List<Machine>();
-
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }
