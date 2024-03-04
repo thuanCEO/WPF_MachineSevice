@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
-using WPF_MachineSevice.Entities;
-
+using Microsoft.Extensions.Configuration;
+using WPF_MachineSevice.Models;
 namespace WPF_MachineSevice.DAO;
 
 public partial class ScanMachineContext : DbContext
@@ -32,13 +33,24 @@ public partial class ScanMachineContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<ShopStore> ShopStores { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=MSI\\SQLTHUAN;Initial Catalog=ScanMachine;User ID=sa;Password=1234567890;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        => optionsBuilder.UseSqlServer("Server=MSI\\SQLTHUAN;Database=ScanMachine;Uid=sa;Pwd=1234567890;TrustServerCertificate=True");
+
+
+    public string GetConnectionString()
+    {
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true);
+        IConfiguration configuration = builder.Build();
+        return configuration.GetConnectionString("DefaultConnection");
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,7 +97,6 @@ public partial class ScanMachineContext : DbContext
         {
             entity.ToTable("Machine");
 
-            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.ModificationDate).HasColumnType("datetime");
             entity.Property(e => e.StoreId).HasColumnName("StoreID");
@@ -104,7 +115,6 @@ public partial class ScanMachineContext : DbContext
             entity.Property(e => e.DeletionDate).HasColumnType("datetime");
             entity.Property(e => e.MachineId).HasColumnName("MachineID");
             entity.Property(e => e.ModificationDate).HasColumnType("datetime");
-            entity.Property(e => e.OrderDetailsId).HasColumnName("OrderDetailsID");
             entity.Property(e => e.OrderImageId).HasColumnName("OrderImageID");
             entity.Property(e => e.StoreId).HasColumnName("StoreID");
 
@@ -113,20 +123,10 @@ public partial class ScanMachineContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Order_Machine");
 
-            entity.HasOne(d => d.OrderDetails).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.OrderDetailsId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Order_OrderDetails");
-
             entity.HasOne(d => d.OrderImage).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.OrderImageId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Order_OrderImage");
-
-            entity.HasOne(d => d.Store).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.StoreId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Order_ShopStore");
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>
@@ -137,7 +137,7 @@ public partial class ScanMachineContext : DbContext
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetailsNavigation)
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OrderDetails_Order");
@@ -162,11 +162,17 @@ public partial class ScanMachineContext : DbContext
         {
             entity.ToTable("Product");
 
+            entity.Property(e => e.BrandId).HasColumnName("BrandID");
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CreationDate).HasColumnType("datetime");
             entity.Property(e => e.DeletionDate).HasColumnType("datetime");
             entity.Property(e => e.ImageId).HasColumnName("ImageID");
             entity.Property(e => e.ModificationDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Brand).WithMany(p => p.Products)
+                .HasForeignKey(d => d.BrandId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Product_Brand");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
@@ -177,6 +183,13 @@ public partial class ScanMachineContext : DbContext
                 .HasForeignKey(d => d.ImageId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Product_Image");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.ToTable("Role");
+
+            entity.Property(e => e.RoleName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<ShopStore>(entity =>
@@ -191,16 +204,20 @@ public partial class ScanMachineContext : DbContext
             entity.HasOne(d => d.Brand).WithMany(p => p.ShopStores)
                 .HasForeignKey(d => d.BrandId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ShopStore_Brand");
+                .HasConstraintName("FK_ShopStore_Brand2");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("User");
 
-            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.CreationDate).HasColumnType("datetime");
             entity.Property(e => e.ModificationDate).HasColumnType("datetime");
+            entity.Property(e => e.Password).HasMaxLength(50);
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_User_Role");
         });
 
         OnModelCreatingPartial(modelBuilder);

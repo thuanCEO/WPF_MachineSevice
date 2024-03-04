@@ -23,6 +23,8 @@ public partial class Product
 
     public int CategoryId { get; set; }
 
+    public int BrandId { get; set; }
+
     public int ImageId { get; set; }
 
     public string? Code { get; set; }
@@ -38,6 +40,8 @@ public partial class Product
     public string? DeleteBy { get; set; }
 
     public string? IsDeleted { get; set; }
+
+    public virtual Brand Brand { get; set; } = null!;
 
     public virtual Category Category { get; set; } = null!;
 
