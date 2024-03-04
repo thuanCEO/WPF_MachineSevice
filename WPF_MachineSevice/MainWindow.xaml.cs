@@ -30,7 +30,14 @@ using Newtonsoft.Json;
 using WPF_MachineSevice.Service;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-
+using ZXing.QrCode;
+using ZXing.Common;
+using ZXing.QrCode.Internal;
+using ZXing;
+using ZXing.Rendering;
+using System.Drawing.Drawing2D;
+using Microsoft.VisualBasic.Logging;
+using QRCoder;
 namespace WPF_MachineSevice
 {
     /// <summary>
@@ -517,7 +524,92 @@ namespace WPF_MachineSevice
                 videoSources[2].Start();
             }
         }
-      
-    
+        private async  void btPaymentQRCode_click(object sender, RoutedEventArgs e)
+        {
+            // Config user momo
+            string Phone = "0333888257";
+            string Name = "Đỗ Hữu Thuận";
+            string Email = "dohuuthuan.bhdn@gmail.com";
+            string PayNumber = txtResult.Text.Trim();
+            string Datetimes = DateTime.Now.ToString("dd/MM/yyyy");
+         
+            if (FileFolderListView.ItemsSource is IEnumerable<Product> products)
+            {
+                foreach (var selectedProduct in products)
+                {
+                    string productName = selectedProduct.ProductName;
+                    string Description = $"Sản phẩm {productName} + Giá tiền {PayNumber} + {Datetimes}";
+                    MomoQRCodeGenerator momoGenerator = new MomoQRCodeGenerator();
+                    string merchantCode = $"2|99|{Phone}|{Name}|{Email}|0|0|{PayNumber}|{Description}";
+                    Bitmap momoQRCode = momoGenerator.GenerateMomoQRCode(merchantCode);
+                    Bitmap resizedLogo = ResizeImage(Properties.Resources.logo, 50, 50);
+                    momoQRCode = AddLogoToQRCode(momoQRCode, resizedLogo);
+              
+                
+                    if (!string.IsNullOrWhiteSpace(txtResult.Text))
+                    {
+                        ScanQR scanQR = new ScanQR();
+                        scanQR.UpdateQRCode(momoQRCode);
+                        double windowWidth = 500;
+                        double windowHeight = 500;
+                        Window qrCodeWindow = new Window
+                        {
+                            Content = scanQR,
+                            Width = windowWidth,
+                            Height = windowHeight,
+                            WindowStyle = WindowStyle.None,
+                            ResizeMode = ResizeMode.NoResize,
+                            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                            Title = "ScanQR"
+                        };
+                        qrCodeWindow.Show();
+                        await Task.Delay(60000);        // Check time 
+                        if (!ProcessPayment())
+                        {
+                            qrCodeWindow.Close();
+                            MessageBox.Show("QR code quá thời gian. Vui lòng thanh toán lại !!!", "Error", MessageBoxButton.OK);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please enter a valid total price.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }       
+        }
+        private bool ProcessPayment()
+        {
+            bool paymentSuccess = false;
+
+
+            return paymentSuccess;
+        }
+ 
+        private Bitmap AddLogoToQRCode(Bitmap qrCode, Bitmap logo)
+        {
+            int xPos = (qrCode.Width - logo.Width) / 2;
+            int yPos = (qrCode.Height - logo.Height) / 2;
+            using (Graphics g = Graphics.FromImage(qrCode))
+            {
+                g.DrawImage(logo, new System.Drawing.Point(xPos, yPos));
+            }
+            return qrCode;
+        }
+
+        private Bitmap ResizeImage(Bitmap image, int maxWidth, int maxHeight)
+        {
+            double ratioX = (double)maxWidth / image.Width;
+            double ratioY = (double)maxHeight / image.Height;
+            double ratio = Math.Min(ratioX, ratioY);
+
+            int newWidth = (int)(image.Width * ratio);
+            int newHeight = (int)(image.Height * ratio);
+
+            Bitmap newImage = new Bitmap(newWidth, newHeight);
+            Graphics g = Graphics.FromImage(newImage);
+            g.DrawImage(image, 0, 0, newWidth, newHeight);
+            return newImage;
+        }
+
     }
 }
