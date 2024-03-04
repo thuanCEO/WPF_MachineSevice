@@ -201,3 +201,10 @@ D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\b
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\Scanning.g.cs
 D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\Scanning.baml
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\QRCoder.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\ScanQR.g.cs
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\ScanQR.baml
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\bin\Debug\net8.0-windows\zxing.dll
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\WPF_MachineSevice.Properties.Resources.resources
+D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\obj\Debug\net8.0-windows\WPF_MachineSevice.csproj.GenerateResource.cache
