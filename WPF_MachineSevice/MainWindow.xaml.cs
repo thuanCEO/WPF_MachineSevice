@@ -437,12 +437,12 @@ namespace WPF_MachineSevice
             // Tạo và trả về danh sách sản phẩm
             return new List<Models.Product>
         {
-            new Models.Product {Id = 1, ProductName = "Product A", Quantity = 10, Price = 10000},
-            new Models.Product {Id = 2, ProductName = "Product B", Quantity = 5, Price = 20000 },
-            new Models.Product {Id = 3, ProductName = "Product C", Quantity = 5, Price = 30000 },
-            new Models.Product {Id = 4,  ProductName = "Product D", Quantity = 5, Price = 40000 },
-            new Product {Id = 5,  ProductName = "Product E", Quantity = 5, Price = 10000 },
-            new Product {Id = 6,  ProductName = "Product F", Quantity = 5, Price = 34000 },
+            new Models.Product {Id = 1, ProductName = "Product A", Quantity = 1, Price = 150000},
+            new Models.Product {Id = 2, ProductName = "Product B", Quantity = 2, Price = 160000 },
+            new Models.Product {Id = 3, ProductName = "Product C", Quantity = 3, Price = 170000 },
+            new Models.Product {Id = 4,  ProductName = "Product D", Quantity = 4, Price = 180000 },
+            new Product {Id = 5,  ProductName = "Product E", Quantity = 7, Price = 190000 },
+        
         };
         }
         private void UpdateTotalPrice()
@@ -464,13 +464,10 @@ namespace WPF_MachineSevice
                     TotalPrice = Convert.ToDouble(txtResult.Text),
                     CreationDate = DateTime.Now,
                     OrderImageId = 1
-                    
                 };
 
                 scanMachineContext.Orders.Add(newOrder);
                 scanMachineContext.SaveChanges();
-
-                List<Models.Product> productList = new List<Models.Product>();
 
                 if (FileFolderListView.ItemsSource != null)
                 {
@@ -478,37 +475,33 @@ namespace WPF_MachineSevice
                     {
                         if (item is Models.Product product)
                         {
-                            Models.Product newProduct = new Product
+                            // Kiểm tra xem product.Id có tồn tại trong bảng Product không
+                            var existingProduct = scanMachineContext.Products.FirstOrDefault(p => p.Id == product.Id);
+                            if (existingProduct != null)
                             {
-                                Id = product.Id,
-                                ProductName = product.ProductName,
-                                Quantity = product.Quantity,
-                                Price = product.Price
-                            };
+                                Models.OrderDetail orderDetail = new Models.OrderDetail
+                                {
+                                    ProductId = product.Id,
+                                    Quantity = product.Quantity,
+                                    Price = product.Price,
+                                    OrderId = newOrder.Id,
+                                    Status = 1
+                                };
 
-                            productList.Add(newProduct);
+                                newOrder.OrderDetails.Add(orderDetail);
+                                newOrder.TotalPrice += product.Quantity * product.Price;
+                            }
+                            else
+                            {
+                                // Xử lý trường hợp product.Id không tồn tại trong bảng Product
+                                MessageBox.Show($"Sản phẩm với Id {product.Id} không tồn tại trong cơ sở dữ liệu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return; // Dừng quá trình lưu đơn hàng
+                            }
                         }
                     }
                 }
 
-                foreach (var product in productList)
-                {
-                    Models.OrderDetail orderDetail = new Models.OrderDetail
-                    {
-                        ProductId = product.Id,
-                        Quantity = product.Quantity,
-                        Price = product.Price,
-                        OrderId = newOrder.Id,
-                        Status = 1,
-                    };
-                    newOrder.OrderDetails.Add(orderDetail);
-                    newOrder.TotalPrice += product.Quantity * product.Price;
-                    
-                }
-
-                scanMachineContext.Orders.Update(newOrder);
-                scanMachineContext.Entry(newOrder).State = EntityState.Modified;
-               
+                scanMachineContext.SaveChanges(); // Lưu đơn hàng và chi tiết đơn hàng vào cơ sở dữ liệu
 
                 // In thông báo thành công lên màn hình
                 MessageBox.Show("Đơn hàng đã được lưu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -519,6 +512,5 @@ namespace WPF_MachineSevice
                 MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
     }
-}
+    }
