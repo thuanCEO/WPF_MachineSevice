@@ -116,7 +116,7 @@ namespace WPF_MachineSevice
                         productDb.Quantity = productNameCounts[productDb.ProductName];
                         productDb.Price = productDb.Quantity * productDb.Price;
                         productsToDisplay.Add(productDb);
-                    }
+                    };                                                                                                                                                                                                                        
                 }
                 FileFolderListView.ItemsSource = productsToDisplay;
                 CalculateTotalPrice();
@@ -639,13 +639,10 @@ namespace WPF_MachineSevice
                     TotalPrice = Convert.ToDouble(txtResult.Text),
                     CreationDate = DateTime.Now,
                     OrderImageId = 1
-
                 };
 
-                context.Orders.Add(newOrder);
-                context.SaveChanges();
-
-                List<Models.Product> productList = new List<Models.Product>();
+                unitOfWork.OrderRepository.Insert(newOrder);
+                unitOfWork.Save();
 
                 if (FileFolderListView.ItemsSource != null)
                 {
@@ -653,44 +650,38 @@ namespace WPF_MachineSevice
                     {
                         if (item is Models.Product product)
                         {
-                            Models.Product newProduct = new Product
+                            // Kiểm tra xem product.Id có tồn tại trong bảng Product không
+                            var existingProduct = unitOfWork.ProductRepository.Get(p => p.Id == product.Id);
+                            if (existingProduct != null)
                             {
-                                Id = product.Id,
-                                ProductName = product.ProductName,
-                                Quantity = product.Quantity,
-                                Price = product.Price
-                            };
+                                Models.OrderDetail orderDetail = new Models.OrderDetail
+                                {
+                                    ProductId = product.Id,
+                                    Quantity = product.Quantity,
+                                    Price = product.Price,
+                                    OrderId = newOrder.Id,
+                                    Status = 1
+                                };
 
-                            productList.Add(newProduct);
+                                newOrder.OrderDetails.Add(orderDetail);
+                                newOrder.TotalPrice += product.Quantity * product.Price;
+                            }
+                            else
+                            {
+                                // Xử lý trường hợp product.Id không tồn tại trong bảng Product
+                                MessageBox.Show($"Sản phẩm với Id {product.Id} không tồn tại trong cơ sở dữ liệu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return; // Dừng quá trình lưu đơn hàng
+                            }
                         }
                     }
                 }
 
-                foreach (var product in productList)
-                {
-                    Models.OrderDetail orderDetail = new Models.OrderDetail
-                    {
-                        ProductId = product.Id,
-                        Quantity = product.Quantity,
-                        Price = product.Price,
-                        OrderId = newOrder.Id,
-                        Status = 1,
-                    };
-                    newOrder.OrderDetails.Add(orderDetail);
-                    newOrder.TotalPrice += product.Quantity * product.Price;
+                unitOfWork.Save(); 
 
-                }
-
-                context.Orders.Update(newOrder);
-                context.Entry(newOrder).State = EntityState.Modified;
-
-
-               
                 MessageBox.Show("Đơn hàng đã được lưu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-            
                 MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
