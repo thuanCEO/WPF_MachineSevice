@@ -6,9 +6,20 @@
              xmlns:local="clr-namespace:WPF_MachineSevice"
              xmlns:qrcoder="clr-namespace:QRCoder;assembly=QRCoder"
              mc:Ignorable="d"
-             d:DesignHeight="200" d:DesignWidth="200">
-    <Grid>
-        <Image x:Name="qrCodeImageView" Stretch="Uniform"/>
-        
-    </Grid>
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Border BorderBrush="Black" BorderThickness="2">
+        <Grid Background= "DarkSlateGray" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <Image x:Name="qrCodeImageView" Stretch="Uniform" Grid.Column="0" Grid.Row="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <Button x:Name="btConfirm"
+                    Click="btConfirmQR_Click" Content="Xát Nhận Thanh Toán Thành Công" Grid.Column="3" HorizontalAlignment="Center" 
+        Grid.Row="1" Width="auto" Height="30"  Margin="0,70,0,0"/>
+        </Grid>
+    </Border>
 </UserControl>

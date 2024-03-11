@@ -170,9 +170,9 @@
                         Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2"
                         Background="DarkGray"
                         Click="btTakePictureImage_Click" Height="36" Width="92"/>
-
+                <!-- 
                 <Button x:Name="btConfirm" Content="Confirm" Grid.ColumnSpan="2" HorizontalAlignment="Center" Grid.Row="1" Width="65" Click="btConfirm_Click" Margin="0,14,0,13"/>
-
+-->
             </Grid>
         </Grid>
     </Border>

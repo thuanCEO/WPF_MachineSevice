@@ -25,5 +25,7 @@ namespace WPF_MachineSevice.Service
        
       
     }
+
+
 }
 
