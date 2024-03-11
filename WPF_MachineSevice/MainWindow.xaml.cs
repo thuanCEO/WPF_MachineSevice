@@ -58,6 +58,7 @@ namespace WPF_MachineSevice
         private readonly DAO.ScanMachineContext context;
 
         private bool IsScanning = true;
+        private bool processingSuccessful = false;
 
         public MainWindow()
         {
@@ -558,25 +559,38 @@ namespace WPF_MachineSevice
                 
                     if (!string.IsNullOrWhiteSpace(txtResult.Text))
                     {
-                        ScanQR scanQR = new ScanQR();
+                        ScanQR scanQR = new ScanQR(this);
                         scanQR.UpdateQRCode(momoQRCode);
-                        double windowWidth = 500;
-                        double windowHeight = 500;
+                        //double windowWidth = 500;
+                        //double windowHeight = 500;
                         Window qrCodeWindow = new Window
                         {
                             Content = scanQR,
-                            Width = windowWidth,
-                            Height = windowHeight,
-                            WindowStyle = WindowStyle.None,
+                            //Width = windowWidth,
+                            //Height = windowHeight,
+                            //WindowStyle = WindowStyle.None,
                             ResizeMode = ResizeMode.NoResize,
                             WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                            Title = "ScanQR"
+                            Title = "Momo QR"
                         };
+                      
+
                         qrCodeWindow.Show();
-                        await Task.Delay(60000);        // Check time 
-                        if (!ProcessPayment())
+                        await Task.Delay(30000);        // Check time 
+
+                        qrCodeWindow.Closed += (s, args) =>
+                        {
+                            if (processingSuccessful)
+                            {
+                                qrCodeWindow = null;
+                             
+                            }
+                        };
+          
+                        if (!ProcessPaymentQR())
                         {
                             qrCodeWindow.Close();
+
                             MessageBox.Show("QR code quá thời gian. Vui lòng thanh toán lại !!!", "Error", MessageBoxButton.OK);
                         }
                     }
@@ -587,14 +601,16 @@ namespace WPF_MachineSevice
                 }
             }       
         }
-        private bool ProcessPayment()
+        private bool ProcessPaymentQR()
         {
             bool paymentSuccess = false;
 
 
             return paymentSuccess;
         }
-    
+
+
+
         /// <summary>
         /// Add Logo momo
         /// </summary>
@@ -627,7 +643,7 @@ namespace WPF_MachineSevice
             return newImage;
         }
 
-        private void btConfirm_Click(object sender, RoutedEventArgs e)
+        public void ProcessPaymentQRSuccess()
         {
             try
             {
@@ -642,7 +658,7 @@ namespace WPF_MachineSevice
                 };
 
                 unitOfWork.OrderRepository.Insert(newOrder);
-                unitOfWork.Save();
+       
 
                 if (FileFolderListView.ItemsSource != null)
                 {
@@ -664,7 +680,7 @@ namespace WPF_MachineSevice
                                 };
 
                                 newOrder.OrderDetails.Add(orderDetail);
-                                newOrder.TotalPrice += product.Quantity * product.Price;
+                           
                             }
                             else
                             {
@@ -676,9 +692,13 @@ namespace WPF_MachineSevice
                     }
                 }
 
-                unitOfWork.Save(); 
+                unitOfWork.Save();
 
-                MessageBox.Show("Đơn hàng đã được lưu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBoxResult result = MessageBox.Show("Cảm ơn quý khách, hẹn gặp lại quí khách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (result == MessageBoxResult.OK)
+                {
+                    processingSuccessful = true; 
+                }
             }
             catch (Exception ex)
             {
@@ -686,8 +706,17 @@ namespace WPF_MachineSevice
             }
         }
 
+        private void CloseScanQRWindow()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window is ScanQR)
+                {
+                    window.Close();
+                    break; // Assuming there's only one instance of ScanQR window
+                }
+            }
 
-
-
+        }
     }
 }

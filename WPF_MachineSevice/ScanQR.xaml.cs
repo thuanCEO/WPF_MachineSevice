@@ -15,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WPF_MachineSevice.Repository;
+
 
 namespace WPF_MachineSevice
 {
@@ -23,10 +25,13 @@ namespace WPF_MachineSevice
     /// </summary>
     public partial class ScanQR : UserControl
     {
-        public ScanQR()
+        public UnitOfWork unitOfWork = new UnitOfWork();
+        private readonly MainWindow _mainWindow;
+   
+        public ScanQR(MainWindow mainWindow)
         {
             InitializeComponent();
-
+            _mainWindow = mainWindow;
         }
         public void UpdateQRCode(Bitmap qrCode)
         {
@@ -46,6 +51,18 @@ namespace WPF_MachineSevice
                     qrCodeImageView.Source = bitmapImage;
                 }
             }
+        }
+        private void btConfirmQR_Click(object sender, RoutedEventArgs e)
+        {
+            if (_mainWindow != null)
+            {
+                _mainWindow.ProcessPaymentQRSuccess();
+            }
+            else
+            {
+                MessageBox.Show("MainWindow instance is null. Cannot process payment.");
+            }
+            Window.GetWindow(this).Close();
         }
     }
 }
