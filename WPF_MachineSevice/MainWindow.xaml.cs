@@ -39,6 +39,7 @@ using Microsoft.VisualBasic.Logging;
 using QRCoder;
 using WPF_MachineSevice.Models;
 using WPF_MachineSevice.Repository;
+using Google.Apis.Storage.v1.Data;
 
 namespace WPF_MachineSevice
 {
@@ -381,6 +382,18 @@ namespace WPF_MachineSevice
                                     //Save Image in file AI
                                     capturedBitmap.Save(filePathPython, System.Drawing.Imaging.ImageFormat.Bmp);
                                     UploadFolderToFirebase(folderPath);
+
+                                    File.Delete(filePath);
+                                    File.Delete(folderPath);
+
+                                    DateTime fileCreationTime = File.GetCreationTime(filePathPython);
+                                    TimeSpan difference = DateTime.Now - fileCreationTime;
+
+                                    if (difference.TotalDays > 2)
+                                    {
+                                        File.Delete(filePathPython);
+                                    }
+
                                 }
                                 catch (Exception ex)
                                 {
