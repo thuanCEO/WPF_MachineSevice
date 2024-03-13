@@ -15,10 +15,14 @@ namespace WPF_MachineSevice.Repository
         private GenericRepository<Category> categoryRepository;
         
         private GenericRepository<Order> orderRepository;
+
         private GenericRepository<OrderDetail> orderDetailRepositoty;
+
+        private GenericRepository<OrderImage> orderImageRepositoty;
      
         private GenericRepository<Product> productRepository;
-    
+
+        private GenericRepository<Image> imageRepository;
 
         public GenericRepository<Category> CategoryRepository
         {
@@ -57,6 +61,19 @@ namespace WPF_MachineSevice.Repository
                 return orderDetailRepositoty;
             }
         }
+        public GenericRepository<OrderImage> OrderImageRepository
+        {
+            get
+            {
+
+                if (orderImageRepositoty == null)
+                {
+                    orderImageRepositoty = new GenericRepository<OrderImage>(context);
+                }
+                return orderImageRepositoty;
+            }
+        }
+
         public GenericRepository<Product> ProductRepository
         {
             get
@@ -69,7 +86,19 @@ namespace WPF_MachineSevice.Repository
                 return productRepository;
             }
         }
-     
+        public GenericRepository<Image> ImageRepository
+        {
+            get
+            {
+
+                if (imageRepository == null)
+                {
+                    imageRepository = new GenericRepository<Image>(context);
+                }
+                return imageRepository;
+            }
+        }
+
         public void Save()
         {
             context.SaveChanges();

@@ -52,9 +52,9 @@ namespace WPF_MachineSevice
         private int selectedCameraIndex = 0;
         private int captureCount = 1;
         public List<Models.Product> YourProductList { get; set; }
-        public UnitOfWork unitOfWork = new UnitOfWork();
-   
 
+
+        public UnitOfWork unitOfWork = new UnitOfWork();
         private readonly DAO.ScanMachineContext context;
 
         private bool IsScanning = true;
@@ -73,8 +73,6 @@ namespace WPF_MachineSevice
         /// </summary>
         private async void LoadDataAsync()
         {
-          
-
             string detectjsonFilePath = @"D:\FPT\SWD392\ProjectSWD392\WebsiteMachine\WPF_MachineSevice\WPF_MachineSevice\detection_results.json";
             Scanning messageBox = new Scanning();
             Window window = new Window
@@ -129,6 +127,9 @@ namespace WPF_MachineSevice
             }
             window.Close();
         }
+        /// <summary>
+        /// Total Price
+        /// </summary>
         private void CalculateTotalPrice()
         {
             double totalPrice = 0;
@@ -576,7 +577,7 @@ namespace WPF_MachineSevice
                       
 
                         qrCodeWindow.Show();
-                        await Task.Delay(30000);        // Check time 
+                        await Task.Delay(30000);
 
                         qrCodeWindow.Closed += (s, args) =>
                         {
@@ -586,12 +587,9 @@ namespace WPF_MachineSevice
                              
                             }
                         };
-          
                         if (!ProcessPaymentQR())
                         {
                             qrCodeWindow.Close();
-
-                            MessageBox.Show("QR code quá thời gian. Vui lòng thanh toán lại !!!", "Error", MessageBoxButton.OK);
                         }
                     }
                     else
@@ -605,11 +603,8 @@ namespace WPF_MachineSevice
         {
             bool paymentSuccess = false;
 
-
             return paymentSuccess;
         }
-
-
 
         /// <summary>
         /// Add Logo momo
@@ -642,23 +637,53 @@ namespace WPF_MachineSevice
             g.DrawImage(image, 0, 0, newWidth, newHeight);
             return newImage;
         }
-
+        /// <summary>
+        /// Add Order 
+        /// </summary>
         public void ProcessPaymentQRSuccess()
         {
+
             try
             {
+                Models.Image newImage = new Models.Image
+                {
+                    Title = "Food",
+                    Description = TakePictureImage(),
+                    Status =1,
+                    Code= "IMG"+ GenerateRandomCode(),
+                    CreationDate = DateTime.Now,
+                    ModificationDate = DateTime.Now,
+                };
+                unitOfWork.ImageRepository.Insert(newImage);
+                unitOfWork.Save();
+
+
+                int imageId = newImage.Id;
+                Models.OrderImage newOderImage = new Models.OrderImage
+                {
+                    ImageDetailsId = imageId,
+                    Code = "OI" + GenerateRandomCode(),
+                    CreationDate = DateTime.Now,
+                    ModificationDate = DateTime.Now,
+                };
+                unitOfWork.OrderImageRepository.Insert(newOderImage);
+                unitOfWork.Save();
+
+                int oderImageId = newOderImage.Id;
                 Models.Order newOrder = new Models.Order
                 {
                     MachineId = 1,
                     StoreId = 1,
                     Status = 1,
                     TotalPrice = Convert.ToDouble(txtResult.Text),
+                    Code = "O" + GenerateRandomCode(),
                     CreationDate = DateTime.Now,
-                    OrderImageId = 1
+                    ModificationDate = DateTime.Now,
+                    OrderImageId = oderImageId
                 };
-
                 unitOfWork.OrderRepository.Insert(newOrder);
-       
+                unitOfWork.Save();
+
 
                 if (FileFolderListView.ItemsSource != null)
                 {
@@ -666,7 +691,6 @@ namespace WPF_MachineSevice
                     {
                         if (item is Models.Product product)
                         {
-                            // Kiểm tra xem product.Id có tồn tại trong bảng Product không
                             var existingProduct = unitOfWork.ProductRepository.Get(p => p.Id == product.Id);
                             if (existingProduct != null)
                             {
@@ -682,12 +706,7 @@ namespace WPF_MachineSevice
                                 newOrder.OrderDetails.Add(orderDetail);
                            
                             }
-                            else
-                            {
-                                // Xử lý trường hợp product.Id không tồn tại trong bảng Product
-                                MessageBox.Show($"Sản phẩm với Id {product.Id} không tồn tại trong cơ sở dữ liệu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                                return; // Dừng quá trình lưu đơn hàng
-                            }
+                            return;
                         }
                     }
                 }
@@ -702,20 +721,65 @@ namespace WPF_MachineSevice
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
         }
-
-        private void CloseScanQRWindow()
+/// <summary>
+/// Random Code 
+/// </summary>
+/// <returns></returns>
+        private string GenerateRandomCode()
         {
-            foreach (Window window in Application.Current.Windows)
+            Random rand = new Random();
+            int randomNumber = rand.Next(1000, 10000); 
+            return randomNumber.ToString();
+        }
+        /// <summary>
+        /// Save Link Image
+        /// </summary>
+        /// <returns></returns>
+        private string TakePictureImage()
+        {
+            try
             {
-                if (window is ScanQR)
+                if (videoSources != null)
                 {
-                    window.Close();
-                    break; // Assuming there's only one instance of ScanQR window
+                    if (selectedCameraIndex >= 0 && selectedCameraIndex < videoSources.Length)
+                    {
+                        var videoSource = videoSources[selectedCameraIndex];
+                        if (videoSource != null && videoSource.IsRunning)
+                        {
+                            BitmapSource capturedBitmapSource = (BitmapSource)camVideoView.Source;
+                            if (capturedBitmapSource != null)
+                            {
+                                Bitmap capturedBitmap = HelpToBitMapImage(capturedBitmapSource);
+                                string subfolderName = DateTime.Now.ToString("yyyyMMdd");
+                                string subfolderPath = System.IO.Path.Combine("D:\\FPT\\SWD392\\ProjectSWD392\\WebsiteMachine\\WPF_MachineSevice\\PicOrders", subfolderName);
+                                Directory.CreateDirectory(subfolderPath);
+                                string folderName = $"{DateTime.Now:yyyyMMdd}_{captureCount++}";
+                                string folderPath = System.IO.Path.Combine(subfolderPath, folderName);
+                                Directory.CreateDirectory(folderPath);
+                                string fileName = $"capture_{DateTime.Now:HHmmss}.png";
+                                string filePath = System.IO.Path.Combine(folderPath, fileName);
+                                capturedBitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
+                                return filePath;
+                            }
+                            return null;
+                        }
+                        return null;
+                        
+                    }
+                    return null;
                 }
+                return null;
             }
+            catch (Exception ex)
+            { 
+                return null;
+            }
+
+
+
 
         }
     }
