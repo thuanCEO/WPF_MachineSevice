@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPF_MachineSevice.Repository;
+using WPF_MachineSevice.Service;
 
 
 namespace WPF_MachineSevice
@@ -41,13 +42,11 @@ namespace WPF_MachineSevice
                 {
                     qrCode.Save(memory, ImageFormat.Png);
                     memory.Position = 0;
-
                     BitmapImage bitmapImage = new BitmapImage();
                     bitmapImage.BeginInit();
                     bitmapImage.StreamSource = memory;
                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                     bitmapImage.EndInit();
-
                     qrCodeImageView.Source = bitmapImage;
                 }
             }
@@ -62,7 +61,20 @@ namespace WPF_MachineSevice
             {
                 MessageBox.Show("MainWindow instance is null. Cannot process payment.");
             }
-            Window.GetWindow(this).Close();
+            MessageBoxResult result = MessageBox.Show("Cảm ơn quý khách, hẹn gặp lại quí khách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            HelperSoundHandler successHandler = new HelperSoundHandler();
+            successHandler.PlayThankYouSound();
+
+            Thread.Sleep(500);
+
+            if (result == MessageBoxResult.OK)
+            {
+              
+                Window.GetWindow(this).Close();
+
+            }
+
         }
     }
 }
