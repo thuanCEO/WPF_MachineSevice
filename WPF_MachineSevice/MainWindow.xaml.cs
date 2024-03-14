@@ -40,6 +40,9 @@ using QRCoder;
 using WPF_MachineSevice.Models;
 using WPF_MachineSevice.Repository;
 using Google.Apis.Storage.v1.Data;
+using System.Media;
+using System.Collections;
+using System.Windows.Threading;
 
 namespace WPF_MachineSevice
 {
@@ -60,6 +63,7 @@ namespace WPF_MachineSevice
 
         private bool IsScanning = true;
         private bool processingSuccessful = false;
+        private DispatcherTimer timer;
 
         public MainWindow()
         {
@@ -87,8 +91,15 @@ namespace WPF_MachineSevice
             };
             window.Show();
             await Task.Delay(2000);
+
+          
+
             if (File.Exists(detectjsonFilePath))
             {
+                HelperSoundHandler successHandler = new HelperSoundHandler();
+                successHandler.ScanningProductsSound();
+                Thread.Sleep(1000);
+
                 List<Detection> productsFromJson;
                 using (StreamReader r = new StreamReader(detectjsonFilePath))
                 {
@@ -384,7 +395,7 @@ namespace WPF_MachineSevice
                                     UploadFolderToFirebase(folderPath);
 
                                     File.Delete(filePath);
-                                    File.Delete(folderPath);
+                                   // File.Delete(folderPath);
 
                                     DateTime fileCreationTime = File.GetCreationTime(filePathPython);
                                     TimeSpan difference = DateTime.Now - fileCreationTime;
@@ -557,7 +568,12 @@ namespace WPF_MachineSevice
             string Email = "dohuuthuan.bhdn@gmail.com";
             string PayNumber = txtResult.Text.Trim();
             string Datetimes = DateTime.Now.ToString("dd/MM/yyyy");
-         
+            if (FileFolderListView.ItemsSource == null)
+            {
+                HelperSoundHandler successHandler = new HelperSoundHandler();
+                successHandler.CheckPaymentSound();
+                Thread.Sleep(1000);
+            }
             if (FileFolderListView.ItemsSource is IEnumerable<Product> products)
             {
                 foreach (var selectedProduct in products)
@@ -602,11 +618,15 @@ namespace WPF_MachineSevice
                         };
                         if (!ProcessPaymentQR())
                         {
+                           
                             qrCodeWindow.Close();
                         }
                     }
+                   
                     else
                     {
+
+                    
                         MessageBox.Show("Please enter a valid total price.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
@@ -716,20 +736,21 @@ namespace WPF_MachineSevice
                                     Status = 1
                                 };
 
-                                newOrder.OrderDetails.Add(orderDetail);
-                           
+                                unitOfWork.OrderDetailRepository.Insert(orderDetail);
+
+                                unitOfWork.Save();
+
                             }
                             return;
                         }
                     }
                 }
-
-                unitOfWork.Save();
-
+       
                 MessageBoxResult result = MessageBox.Show("Cảm ơn quý khách, hẹn gặp lại quí khách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+             
                 if (result == MessageBoxResult.OK)
                 {
-                    processingSuccessful = true; 
+                    processingSuccessful = true;
                 }
             }
             catch (Exception ex)
@@ -737,10 +758,10 @@ namespace WPF_MachineSevice
                 return;
             }
         }
-/// <summary>
-/// Random Code 
-/// </summary>
-/// <returns></returns>
+        /// <summary>
+        /// Random Code 
+        /// </summary>
+        /// <returns></returns>
         private string GenerateRandomCode()
         {
             Random rand = new Random();
@@ -790,10 +811,17 @@ namespace WPF_MachineSevice
             { 
                 return null;
             }
-
-
-
-
         }
+
+
+        public void ClearDataView()
+        {
+            if (FileFolderListView.ItemsSource is IList list)
+            {
+                list.Clear();
+                list = null;
+            }
+        }
+      
     }
 }
